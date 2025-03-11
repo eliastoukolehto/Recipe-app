@@ -4,6 +4,9 @@ import jwt from 'jsonwebtoken'
 import { getEnv } from '../../utils/getenv'
 import bcrypt from "bcrypt"
 
+//One capital lietter, lowercase letter and number required
+const passwordRegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{3,30}$/
+
 const resolvers = {
   Query: {
     me: async (_root:unknown, _args:unknown, { currentUser }: {currentUser: object | null}) => { return currentUser },
@@ -32,6 +35,14 @@ const resolvers = {
     },
 
     createUser: async (_root:unknown, { username, password }: {username: string, password: string}) => {
+      if (!passwordRegExp.test(password)) {
+        throw new GraphQLError('Creating user failed: Invalid password', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: password
+          }
+        })
+      }
       try {
         const passwordHash = await bcrypt.hash(password, 10) //10 rounds of encryption
         const user = await User.create({
@@ -40,7 +51,7 @@ const resolvers = {
         })
         return user
       } catch (error) {
-        throw new GraphQLError('Creating user failed', {
+        throw new GraphQLError('Creating user failed: Invalid username', {
           extensions: {
             code: 'BAD_USER_INPUT',
             invalidArgs: username,

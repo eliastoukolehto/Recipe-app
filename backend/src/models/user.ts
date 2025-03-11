@@ -22,7 +22,12 @@ User.init({
   },
   username: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: false,
+    unique: true,
+    validate: {
+      len: [3,14],
+      notContains: ' '
+    }
   },
   password: {
     type: DataTypes.TEXT,
