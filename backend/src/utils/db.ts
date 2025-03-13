@@ -1,8 +1,16 @@
 import { Sequelize } from "sequelize"
-import { DATABASE_URL } from "./config"
+import { DATABASE_URL, getEnv } from "./config"
 import { SequelizeStorage, Umzug } from "umzug"
 
-const sequelize = new Sequelize(DATABASE_URL)
+//Remove logging during tests
+const logging = getEnv("NODE_ENV") === 'test'
+  ? false
+  : console.log
+const logger = getEnv("NODE_ENV") === 'test'
+  ? undefined
+  : console
+
+const sequelize = new Sequelize(DATABASE_URL, { logging })
 
 const connectToDatabase = async () => {
   try {
@@ -20,7 +28,7 @@ const migrationConf = {
   migrations: { glob: 'src/migrations/*.ts' },
   context: sequelize.getQueryInterface(),
   storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
-  logger: console,
+  logger,
 }
 
 export const migrator = new Umzug(migrationConf)
