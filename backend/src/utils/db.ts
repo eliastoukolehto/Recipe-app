@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize"
-import { getEnv } from "./getenv"
-  
-const DATABASE_URL = getEnv('DATABASE_URL')
+import { getDatabaseUrl } from "./config"
+
+const DATABASE_URL = getDatabaseUrl()
 const sequelize = new Sequelize(DATABASE_URL)
 
 

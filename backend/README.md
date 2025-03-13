@@ -14,4 +14,5 @@ add a .env file to the base of the backend with following variables
 PORT=4000   #GraphQL service port
 SECRET=YourSecretKey
 DATABASE_URL=MyURL  #URL to PostgreSQL database
+TEST_DATABASE_URL=MyTestURL  #URL to PostgreSQL database for tests
 ```
