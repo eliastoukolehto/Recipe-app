@@ -1,7 +1,7 @@
 import { GraphQLError } from 'graphql'
 import { User } from '../../models'
 import jwt from 'jsonwebtoken'
-import { getEnv } from '../../utils/getenv'
+import { getEnv } from '../../utils/config'
 import bcrypt from "bcrypt"
 
 //One capital lietter, lowercase letter and number required

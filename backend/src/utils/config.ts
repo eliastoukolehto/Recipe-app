@@ -1,23 +1,17 @@
 import 'dotenv/config'
 
-//export const DATABASE_URL = process.env.DATABASE_URL
-export const getDatabaseUrl = (): string => {
-  if (process.env.NODE_ENV === 'test') {
-    if (!process.env.TEST_DATABASE_URL) {
-      throw new Error(`Variable TEST_DATABASE_URL undefined`)
-    }
-    else {
-      return process.env.TEST_DATABASE_URL
-    }
+export const getEnv = (varName: string): string => {
+  const value = process.env[varName]
+  if (!value) {
+    throw new Error(`Variable ${varName} undefined`)
   }
-  else {
-    if (!process.env.DATABASE_URL) {
-      throw new Error(`Variable DATABASE_URL undefined`)
-    }
-    else {
-      return process.env.DATABASE_URL
-    }
-  }
+  return value
 }
-export const PORT = 4000
+  
+
+export const DATABASE_URL = process.env.NODE_ENV === 'test' 
+  ? getEnv("DATABASE_URL")
+  : getEnv("TEST_DATABASE_URL")
+
+
 
