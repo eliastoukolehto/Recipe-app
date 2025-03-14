@@ -11,7 +11,7 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import cors from "cors"
 import { expressMiddleware } from "@apollo/server/express4"
 import { getCurrentUser } from "./src/middleware/getCurrentUser"
-import { getEnv } from "./src/utils/getenv"
+import { getEnv } from "./src/utils/config"
 
 const start = async () => {
   await db.connectToDatabase()

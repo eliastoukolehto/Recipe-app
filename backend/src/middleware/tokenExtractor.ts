@@ -1,6 +1,6 @@
 import { Request } from "express"
 import jwt, { JwtPayload } from "jsonwebtoken"
-import { getEnv } from "../utils/getenv"
+import { getEnv } from "../utils/config"
 
 export const tokenExtractor = (req: Request | null):JwtPayload | null => {
     const auth = req? req.headers.authorization : null

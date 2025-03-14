@@ -6,7 +6,8 @@
   "scripts": {
     "tsc": "tsc",
     "lint": "eslint .",
-    "dev": "ts-node-dev index.ts"
+    "dev": "cross-env NODE_ENV=development ts-node-dev index.ts",
+    "test": "cross-env NODE_ENV=test jest"
   },
   "author": "Elias Toukolehto",
   "license": "ISC",
@@ -15,8 +16,12 @@
     "@stylistic/eslint-plugin": "^4.0.1",
     "@types/eslint__js": "^8.42.3",
     "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.14",
+    "@types/umzug": "^2.3.9",
     "@types/ws": "^8.5.14",
     "eslint": "^9.21.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.6",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.25.0"
@@ -28,6 +33,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "graphql": "^16.10.0",
@@ -35,6 +41,7 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.3",
     "sequelize": "^6.37.5",
+    "umzug": "^3.8.2",
     "ws": "^8.18.1"
   }
 }

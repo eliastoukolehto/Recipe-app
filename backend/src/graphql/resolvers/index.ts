@@ -1,11 +1,11 @@
 import { GraphQLError } from 'graphql'
 import { User } from '../../models'
 import jwt from 'jsonwebtoken'
-import { getEnv } from '../../utils/getenv'
+import { getEnv } from '../../utils/config'
 import bcrypt from "bcrypt"
 
-//One capital lietter, lowercase letter and number required
-const passwordRegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{3,30}$/
+//One capital lietter, lowercase letter and number required, at last 8 letters
+const passwordRegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,30}$/
 
 const resolvers = {
   Query: {
