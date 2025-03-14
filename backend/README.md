@@ -16,3 +16,10 @@ SECRET=YourSecretKey
 DATABASE_URL=MyURL  #URL to PostgreSQL database
 TEST_DATABASE_URL=MyTestURL  #URL to PostgreSQL database for tests
 ```
+
+Tests:
+
+run unit tests
+```
+npm run test
+```
