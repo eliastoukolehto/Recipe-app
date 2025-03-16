@@ -2,18 +2,24 @@ import { Button, TextField, Typography } from "@mui/material"
 import { SyntheticEvent, useState } from "react"
 import { userLogin } from "../reducers/userReducer"
 import { useAppDispatch } from "../hooks"
+import { useNavigate } from "react-router-dom"
 
 
 const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
-  const handleLogin = (event: SyntheticEvent) => {
+  const handleLogin = async (event: SyntheticEvent) => {
     event.preventDefault()
-    dispatch(userLogin({username, password}))
-    setUsername('')
-    setPassword('')
+
+    const success = await dispatch(userLogin({username, password}))
+    if (success) {
+      setUsername('')
+      setPassword('')
+      navigate('/')
+    }
   }
 
   return (

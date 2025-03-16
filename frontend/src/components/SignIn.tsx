@@ -9,11 +9,13 @@ const SignIn = () => {
   const [password, setPassword] = useState('')
   const dispatch = useAppDispatch()
 
-  const handleSignIn = (event: SyntheticEvent) => {
+  const handleSignIn = async (event: SyntheticEvent) => {
     event.preventDefault()
-    dispatch(userSignIn({username, password}))
-    setUsername('')
-    setPassword('')
+    const success = await dispatch(userSignIn({username, password}))
+    if (success) {
+      setUsername('')
+      setPassword('')
+    }
   }
 
   return (

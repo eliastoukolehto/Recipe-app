@@ -7,6 +7,7 @@ import Login from './components/Login'
 import { useAppDispatch } from './hooks'
 import { setUserFromToken } from './reducers/userReducer'
 import SignIn from './components/SignIn'
+import Notification from './components/Notification'
 
 const App = () => {
   const dispatch = useAppDispatch()
@@ -16,6 +17,7 @@ const App = () => {
   return (
     <>
       <AppBar/>
+      <Notification/>
 
       <Routes>
         <Route path="/" element={<Home />} />
