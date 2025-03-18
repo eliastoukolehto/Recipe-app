@@ -1,22 +1,28 @@
 import { Button, TextField, Typography } from "@mui/material"
 import { SyntheticEvent, useState } from "react"
-import { userSignIn } from "../reducers/userReducer"
 import { useAppDispatch } from "../hooks"
+import { useMutation } from "@apollo/client"
+import { SIGN_IN } from "../graphql/queries/userQueries"
+import { notify } from "../reducers/notificationReducer"
 
 
 const SignIn = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const dispatch = useAppDispatch()
+  const [signIn] = useMutation(SIGN_IN)
 
   const handleSignIn = async (event: SyntheticEvent) => {
     event.preventDefault()
-    const success = await dispatch(userSignIn({username, password}))
-    if (success) {
+    try {
+      await signIn({variables: {username, password}})
       setUsername('')
       setPassword('')
+      dispatch(notify({severity: "success", message:`Sign In Successful. You can now Login with your credentials`}))
+    } catch {
+      dispatch(notify({severity: "error", message:`Sign In failed`}))
     }
-  }
+  } 
 
   return (
     <>

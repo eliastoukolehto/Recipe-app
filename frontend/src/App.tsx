@@ -5,13 +5,24 @@ import Home from './components/Home'
 import AppBar from './components/AppBar'
 import Login from './components/Login'
 import { useAppDispatch } from './hooks'
-import { setUserFromToken } from './reducers/userReducer'
+import { setUser } from './reducers/userReducer'
 import SignIn from './components/SignIn'
 import Notification from './components/Notification'
+import { useQuery } from '@apollo/client'
+import { USER } from './graphql/queries/userQueries'
+import { useEffect } from 'react'
 
 const App = () => {
   const dispatch = useAppDispatch()
-  dispatch(setUserFromToken())
+  const { data } = useQuery(USER)
+
+  useEffect(() => {
+      const token = window.localStorage.getItem('recipeapp-userToken')
+      if (token && data && data?.me) {
+        dispatch(setUser(data.me))
+      }
+  }, [data, dispatch])
+
 
 
   return (
