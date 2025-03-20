@@ -1,36 +1,119 @@
-import { Button, TextField, Typography } from "@mui/material"
-import { SyntheticEvent, useState } from "react"
+import { Button, TextField, Typography, Grid2 as Grid } from "@mui/material"
 import { useAppDispatch } from "../hooks"
 import { useMutation } from "@apollo/client"
 import { SIGN_IN } from "../graphql/queries/userQueries"
 import { notify } from "../reducers/notificationReducer"
+import * as Yup from "yup"
+import { useFormik } from "formik"
+import { useNavigate } from "react-router-dom"
+
+interface values {
+  username: string
+  password: string
+  passwordConfirmation: string
+}
+
+//validators
+const usernameWhitelist = /^[a-zA-Z0-9_-]+$/
+const lowercaseRegEx = /(?=.*[a-z])/
+const uppercaseRegEx = /(?=.*[A-Z])/
+const numbersRegEx = /(?=.*[0-9])/
 
 
 const SignIn = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const dispatch = useAppDispatch()
   const [signIn] = useMutation(SIGN_IN)
+  const navigate = useNavigate()
 
-  const handleSignIn = async (event: SyntheticEvent) => {
-    event.preventDefault()
+  const handleSignIn = async (values: values) => {
+    const {username, password} = values
     try {
       await signIn({variables: {username, password}})
-      setUsername('')
-      setPassword('')
       dispatch(notify({severity: "success", message:`Sign In Successful. You can now Login with your credentials`}))
+      navigate('/login')
     } catch {
-      dispatch(notify({severity: "error", message:`Sign In failed`}))
+      dispatch(notify({severity: "error", message:`Sign In failed. Username might be taken`}))
     }
   } 
 
+    const initialValues = {
+      username: "",
+      password: "",
+      passwordConfirmation: ""
+    }
+  
+    const validationSchema = Yup.object().shape({
+      username: Yup.string()
+        .required("Required")
+        .matches(usernameWhitelist, "Username has forbidden characters")
+        .min(3, "Username must be at least 3 characters"),
+      password: Yup.string()
+        .required("Required")
+        .min(8, "Password must be at least 8 characters")
+        .max(30, "Password is too long")
+        .matches(lowercaseRegEx, "Password must contain one lowercase letter")
+        .matches(uppercaseRegEx, "Password must contain one uppercase letter")
+        .matches(numbersRegEx, "Password must contain one number"),
+      passwordConfirmation: Yup.string()
+        .oneOf([Yup.ref('password'), undefined], 'Passwords must match')
+        .required("Required")
+    })
+
+    const formik = useFormik({
+      initialValues,
+      validationSchema,
+      onSubmit: handleSignIn
+    })
+
+
   return (
     <>
-      <form onSubmit={handleSignIn}>
-        <Typography>Sign In</Typography>
-        <TextField label="username" value={username} onChange={({ target }) => setUsername(target.value)}/>
-        <TextField label="password" value={password} type="password" onChange={({ target }) => setPassword(target.value)}/>
-        <Button type="submit">Sign In</Button>   
+      <form onSubmit={formik.handleSubmit}>
+        <Grid container direction="column" spacing={2}>
+          <Grid size={12}>
+            <Typography>Sign In</Typography>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField 
+                label="Username" 
+                name="username"
+                fullWidth
+                value={formik.values.username}
+                onChange={formik.handleChange}
+                error={formik.touched.username && Boolean(formik.errors.username)}
+                helperText={formik.touched.username && formik.errors.username}
+                />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField 
+                label="Password" 
+                name="password"
+                type="password"
+                fullWidth
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                error={formik.touched.password && Boolean(formik.errors.password)}
+                helperText={formik.touched.password && formik.errors.password}
+                />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField 
+                label="Confirm password" 
+                name="passwordConfirmation"
+                type="password"
+                fullWidth
+                value={formik.values.passwordConfirmation}
+                onChange={formik.handleChange}
+                error={formik.touched.passwordConfirmation && Boolean(formik.errors.passwordConfirmation)}
+                helperText={formik.touched.passwordConfirmation && formik.errors.passwordConfirmation}
+                />
+            </Grid>
+            <Grid>
+              <Button type="submit">
+                Sign In
+              </Button>
+            </Grid>
+          </Grid>
       </form>
     </>
   )
