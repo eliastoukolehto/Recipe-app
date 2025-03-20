@@ -6,6 +6,9 @@ import { BrowserRouter } from 'react-router-dom'
 import { store } from './store.ts'
 import { ApolloProvider } from '@apollo/client'
 import { apolloClient } from './graphql/apolloClient.ts'
+import { theme } from './theme.ts'
+import { ThemeProvider } from '@mui/material'
+
 
 
 createRoot(document.getElementById('root')!).render(
@@ -13,7 +16,9 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <ApolloProvider client={apolloClient}>
         <Provider store={store}>
-          <App />
+          <ThemeProvider theme={theme}>
+            <App />
+          </ThemeProvider>
         </Provider>
       </ApolloProvider>
     </BrowserRouter>
