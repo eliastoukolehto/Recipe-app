@@ -11,7 +11,7 @@ import Notification from './components/Notification'
 import { useQuery } from '@apollo/client'
 import { USER } from './graphql/queries/userQueries'
 import { useEffect } from 'react'
-import { Container } from '@mui/material'
+import { Container, CssBaseline } from '@mui/material'
 
 const App = () => {
   const dispatch = useAppDispatch()
@@ -28,10 +28,11 @@ const App = () => {
 
   return (
     <>
+      <CssBaseline/>
       <AppBar/>
       <Notification/>
 
-      <Container>
+      <Container sx={{padding: 4}}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

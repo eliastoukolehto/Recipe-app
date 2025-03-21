@@ -80,7 +80,7 @@ const Login = () => {
               />
           </Grid>
           <Grid>
-            <Button type="submit" disabled={Boolean(formik.errors.username) || Boolean(formik.errors.username)}>
+            <Button type="submit" variant="contained" disabled={Boolean(formik.errors.username) || Boolean(formik.errors.username)}>
               Login
             </Button>
           </Grid>

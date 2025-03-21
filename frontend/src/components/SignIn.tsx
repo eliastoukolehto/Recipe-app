@@ -109,7 +109,7 @@ const SignIn = () => {
                 />
             </Grid>
             <Grid>
-              <Button type="submit">
+              <Button type="submit" variant="contained">
                 Sign In
               </Button>
             </Grid>
