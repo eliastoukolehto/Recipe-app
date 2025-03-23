@@ -12,17 +12,28 @@ import { useQuery } from '@apollo/client'
 import { USER } from './graphql/queries/userQueries'
 import { useEffect } from 'react'
 import { Container, CssBaseline } from '@mui/material'
+import { notify } from './reducers/notificationReducer'
 
 const App = () => {
   const dispatch = useAppDispatch()
-  const { data } = useQuery(USER)
+  const {refetch: getUser} = useQuery(USER, {skip: true})
 
   useEffect(() => {
+    const initializeUser = (async () => {
       const token = window.localStorage.getItem('recipeapp-userToken')
-      if (token && data && data?.me) {
-        dispatch(setUser(data.me))
+      if (token) {
+        try {
+          const {data} = await getUser()
+          dispatch(setUser(data.me))
+        } catch {
+          dispatch(notify({severity: "error", message:`Instance expired, please login again`}))
+          window.localStorage.removeItem('recipeapp-userToken')
+        }
       }
-  }, [data, dispatch])
+    })
+    initializeUser()
+      
+  }, [dispatch, getUser])
 
 
 

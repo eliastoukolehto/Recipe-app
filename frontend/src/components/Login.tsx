@@ -17,14 +17,14 @@ const Login = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const [login] = useMutation(LOGIN)
-  const {refetch} = useQuery(USER)
+  const {refetch: getUser} = useQuery(USER, {skip: true})
 
   const handleLogin = async (values: values) => {
     const {username, password} = values
     try {
       const { data } = await login({variables: {username, password}})
       window.localStorage.setItem('recipeapp-userToken', data.login.value)
-      const { data: userData } = await refetch()
+      const { data: userData } = await getUser()
       dispatch(setUser(userData.me))
       dispatch(notify({severity: "success", message:`Login Successful!`}))
       navigate('/')
