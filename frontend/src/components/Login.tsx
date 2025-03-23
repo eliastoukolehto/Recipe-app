@@ -75,12 +75,12 @@ const Login = () => {
               fullWidth
               value={formik.values.password}
               onChange={formik.handleChange}
-              error={formik.touched.username && Boolean(formik.errors.password)}
-              helperText={formik.touched.username && formik.errors.password}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
               />
           </Grid>
           <Grid>
-            <Button type="submit" variant="contained" disabled={Boolean(formik.errors.username) || Boolean(formik.errors.username)}>
+            <Button type="submit" variant="contained">
               Login
             </Button>
           </Grid>
