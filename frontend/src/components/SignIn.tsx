@@ -46,14 +46,15 @@ const SignIn = () => {
       username: Yup.string()
         .required("Required")
         .matches(usernameWhitelist, "Username has forbidden characters")
-        .min(3, "Username must be at least 3 characters"),
+        .min(3, "Username must be at least 3 characters")
+        .max(14, "Username is too long"),
       password: Yup.string()
         .required("Required")
         .min(8, "Password must be at least 8 characters")
         .max(30, "Password is too long")
-        .matches(lowercaseRegEx, "Password must contain one lowercase letter")
-        .matches(uppercaseRegEx, "Password must contain one uppercase letter")
-        .matches(numbersRegEx, "Password must contain one number"),
+        .matches(lowercaseRegEx, "Password must contain at least one lowercase letter")
+        .matches(uppercaseRegEx, "Password must contain at least one uppercase letter")
+        .matches(numbersRegEx, "Password must contain at least one number"),
       passwordConfirmation: Yup.string()
         .oneOf([Yup.ref('password'), undefined], 'Passwords must match')
         .required("Required")
@@ -109,7 +110,7 @@ const SignIn = () => {
                 />
             </Grid>
             <Grid>
-              <Button type="submit">
+              <Button type="submit" variant="contained">
                 Sign In
               </Button>
             </Grid>

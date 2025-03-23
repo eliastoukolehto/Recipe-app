@@ -3,13 +3,14 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
-import { store } from './store.ts'
+import { setupStore } from './store.ts'
 import { ApolloProvider } from '@apollo/client'
 import { apolloClient } from './graphql/apolloClient.ts'
 import { theme } from './theme.ts'
 import { ThemeProvider } from '@mui/material'
 
 
+const store = setupStore()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

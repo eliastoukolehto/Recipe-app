@@ -11,7 +11,11 @@ const AppBar = () => {
   return (
     <MuiAppBar position="static">
       <Toolbar>
-        <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1 }}>
+        <Typography 
+          variant="h6" 
+          component={Link} 
+          to="/" 
+          sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
           Recipe-app
         </Typography>
         {!user &&
