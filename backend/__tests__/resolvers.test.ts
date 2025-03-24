@@ -1,4 +1,4 @@
-import { resetDatabase, createTestServer } from "./testHelper"
+import { createTestServer } from "./testHelper"
 import assert from 'assert'
 import db from "../src/utils/db"
 
@@ -26,6 +26,12 @@ mutation createUser($username: String!, $password: String!) {
 }
 `
 
+const resetQuery = /* GraphQL */`
+mutation {
+  reset
+}
+`
+
 describe('resolver tests', () => {
 
   afterAll(async () => {
@@ -36,7 +42,7 @@ describe('resolver tests', () => {
   describe('creating user', () => {
 
     beforeEach(async () => {
-      await resetDatabase()
+      await testServer.executeOperation({ query: resetQuery })
     })
 
     test('succeeds with correct input', async () => {
@@ -127,7 +133,7 @@ describe('resolver tests', () => {
   describe('login query', () => {
   
     beforeEach(async () => {
-      await resetDatabase()
+      await testServer.executeOperation({ query: resetQuery })
     })
   
     test('succeeds with correct credentials', async () => {

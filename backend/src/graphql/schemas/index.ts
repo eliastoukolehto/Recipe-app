@@ -15,6 +15,7 @@ const typeDefs = /* GraphQL */`
       username: String!
       password: String!
     ): User
+    reset: String 
   },
   type Query {
     me: User

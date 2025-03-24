@@ -59,6 +59,15 @@ const resolvers = {
           }
         })
       }
+    },
+    reset: async (_root:unknown, _args:unknown ) => {
+      const enabled = getEnv("NODE_ENV") === 'test'
+      if (!enabled) {
+        return "Reset mutation disabled!"
+      } else {
+        await User.truncate()
+        return "Database has been reset!"
+      }
     }
   }
 }
