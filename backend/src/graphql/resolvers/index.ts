@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { getEnv } from '../../utils/config'
 import bcrypt from "bcrypt"
 
-//One capital lietter, lowercase letter and number required, at least 8 letters
+//One capital letter, lowercase letter and number required, at least 8 letters
 const passwordRegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,30}$/
 
 const resolvers = {
