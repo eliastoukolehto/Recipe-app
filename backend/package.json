@@ -6,7 +6,7 @@
   "scripts": {
     "tsc": "tsc",
     "lint": "eslint .",
-    "dev": "cross-env NODE_ENV=development ts-node-dev index.ts",
+    "dev": "cross-env NODE_ENV=development ts-node-dev --poll index.ts",
     "test": "cross-env NODE_ENV=test jest",
     "start:test": "cross-env NODE_ENV=test ts-node-dev index.ts"
   },
