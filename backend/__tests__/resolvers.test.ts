@@ -157,7 +157,7 @@ describe('resolver tests', () => {
 
       assert(response.body.kind === 'single')
       expect(response.body.singleResult.errors).toBeDefined()
-      expect(response.body.singleResult.errors?.[0]?.extensions?.code).toBe("BAD_USER_INPUT")
+      expect(response.body.singleResult.errors?.[0]?.extensions?.code).toBe("BAD_USER_INPUT_2")
     })
   
     test('fails with missing user', async () => {

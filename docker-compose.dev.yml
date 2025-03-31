@@ -6,7 +6,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=mysecretpassword 
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/data_dev:/var/lib/postgresql/data
 
   backend:
     image: recipeapp-backend-dev

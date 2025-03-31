@@ -4,11 +4,12 @@
   "description": "backend for Recipe-app",
   "main": "index.js",
   "scripts": {
-    "tsc": "tsc",
+    "build": "tsc",
     "lint": "eslint .",
     "dev": "cross-env NODE_ENV=development ts-node-dev --poll index.ts",
     "test": "cross-env NODE_ENV=test jest",
-    "start:test": "cross-env NODE_ENV=test ts-node-dev index.ts"
+    "start:test": "cross-env NODE_ENV=test ts-node-dev index.ts",
+    "start": "cross-env NODE_ENV=production node build/index.js"
   },
   "author": "Elias Toukolehto",
   "license": "ISC",

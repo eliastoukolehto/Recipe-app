@@ -1,0 +1,37 @@
+name: recipeapp-prod
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword 
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+
+  backend:
+    image: recipeapp-backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    container_name: recipeapp-backend
+    depends_on:
+      - db
+
+  frontend:
+    image: recipeapp-frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: recipeapp-frontend
+
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: recipeapp-niginx
+    depends_on:      
+      - frontend
+      - backend
