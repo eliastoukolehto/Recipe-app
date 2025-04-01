@@ -1,3 +1,4 @@
+name: recipeapp-dev
 services:
   db:
     image: postgres
@@ -34,6 +35,8 @@ services:
     volumes:
       - ./frontend:/usr/src/app
       - frontend-node_modules:/usr/src/app/node_modules
+    environment:
+      - APP_ENV=container
     container_name: recipeapp-frontend-dev
 
 
