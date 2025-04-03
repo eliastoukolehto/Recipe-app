@@ -15,4 +15,7 @@ run unit tests:
 ```
 npm run test
 ```
-
+Create coverage report to ./coverage:
+```
+npm run test:coverage
+```

@@ -24,18 +24,27 @@ NOTE: e2e tests will fail once on inital build
 ```
 docker start -i recipeapp-e2e-test 
 ```
-the report will be created in ./e2e/playwright-report
+the coverage report will be created in ./e2e/playwright-report
 
 3. run backend tests
 
 ```
 docker exec -it recipeapp-backend-test npm run test   
 ```
+Create coverage report to ./backend/coverage
+```
+docker exec -it recipeapp-backend-test npm run test:coverage   
+```
 
 4. run frontend tests
 ```
 docker exec -it recipeapp-frontend-test npm run test   
 ```
+Create coverage report to ./frontend/coverage
+```
+docker exec -it recipeapp-backend-test npm run test:coverage   
+```
+
 
 ## Backlog
 
