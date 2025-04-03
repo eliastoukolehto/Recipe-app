@@ -10,4 +10,7 @@ const createUser = async (page: Page, username: string, password: string) => {
   await page.getByRole('link', { name: /recipe-app/i }).click()
 }
 
-export { createUser }
+const backendURL = 'http://localhost:4000'
+const frontendURL = 'http://localhost:5173'
+
+export { createUser, backendURL, frontendURL }

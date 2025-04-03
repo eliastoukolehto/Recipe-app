@@ -17,7 +17,8 @@ const connectToDatabase = async () => {
     await sequelize.authenticate()
     await migrator.up()
     console.log('connected to the database')
-  } catch {
+  } catch (e) {
+    console.log(e)
     console.log('database connection failed')
     return process.exit(1)
   }

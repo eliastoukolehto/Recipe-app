@@ -1,0 +1,61 @@
+name: recipeapp-test
+services:
+  db:
+    image: postgres
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword 
+    volumes:
+      - ./postgres/data_test:/var/lib/postgresql/data
+
+  backend:
+    image: recipeapp-backend-test
+    ports:
+      - 4000:4000
+    build: 
+      context: ./backend
+      dockerfile: test.Dockerfile
+    volumes:
+      - ./backend:/usr/src/app
+      - backend-node_modules:/usr/src/app/node_modules
+    env_file:
+      - ./backend/.env
+    container_name: recipeapp-backend-test
+    depends_on:
+      - db
+
+  frontend:
+    image: recipeapp-frontend-test
+    ports:
+      - 5173:5173
+    build: 
+      context: ./frontend
+      dockerfile: test.Dockerfile
+    volumes:
+      - ./frontend:/usr/src/app
+      - frontend-node_modules:/usr/src/app/node_modules
+    environment:
+      - APP_ENV=container
+    container_name: recipeapp-frontend-test
+
+  e2e:
+    image: recipeapp-e2e-test
+    ports:
+      - 9323:9323
+    build:
+      context: ./e2e
+      dockerfile: test.Dockerfile
+    network_mode: host
+    volumes:
+      - ./e2e:/usr/src/app
+      - e2e-node_modules:/usr/src/app/node_modules
+    container_name: recipeapp-e2e-test
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  backend-node_modules:
+  frontend-node_modules:
+  e2e-node_modules:

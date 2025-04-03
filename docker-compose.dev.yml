@@ -1,0 +1,45 @@
+name: recipeapp-dev
+services:
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword 
+    volumes:
+      - ./postgres/data_dev:/var/lib/postgresql/data
+
+  backend:
+    image: recipeapp-backend-dev
+    ports:
+      - 4000:4000
+    build: 
+      context: ./backend
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./backend:/usr/src/app
+      - backend-node_modules:/usr/src/app/node_modules
+    env_file:
+      - ./backend/.env
+    container_name: recipeapp-backend-dev
+    depends_on:
+      - db
+
+  frontend:
+    image: recipeapp-frontend-dev
+    ports:
+      - 5173:5173
+    build: 
+      context: ./frontend
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./frontend:/usr/src/app
+      - frontend-node_modules:/usr/src/app/node_modules
+    environment:
+      - APP_ENV=container
+    container_name: recipeapp-frontend-dev
+
+
+volumes:
+  backend-node_modules:
+  frontend-node_modules:
