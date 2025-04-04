@@ -33,7 +33,7 @@ jobs:
           cd backend
           npm run test
         env:
-          TEST_DATABASE_URL: postgresql://postgres:mysecretpassword@localhost/postgres
+          TEST_DATABASE_URL: postgresql://postgres:mysecretpassword@localhost:5432/postgres
           PORT: 4000
           SECRET: secret
 
@@ -89,7 +89,7 @@ jobs:
           cd backend
           npm run start:test
         env:
-          TEST_DATABASE_URL: postgresql://postgres:mysecretpassword@localhost/postgres
+          TEST_DATABASE_URL: postgresql://postgres:mysecretpassword@localhost:5432/postgres
           PORT: 4000
           SECRET: secret
       
