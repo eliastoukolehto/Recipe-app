@@ -34,6 +34,10 @@ mutation {
 
 describe('resolver tests', () => {
 
+  beforeAll(async () => {
+    await db.connectToDatabase()
+  })
+
   afterAll(async () => {
     await testServer.stop()
     await db.sequelize.close()
