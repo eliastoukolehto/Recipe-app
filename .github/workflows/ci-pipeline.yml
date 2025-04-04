@@ -88,6 +88,11 @@ jobs:
           cd frontend
           npm ci
 
+      - name: install e2e dependencies
+        run: |
+          cd e2e
+          npm ci
+
       - name: start test backend
         run: |
           cd backend
