@@ -1,23 +1,21 @@
-import { Avatar, IconButton, Menu, MenuItem, Typography } from "@mui/material"
-import { useAppDispatch, useAppSelector } from "../hooks"
-import { SyntheticEvent, useState } from "react"
-import { userLogout } from "../reducers/userReducer"
-
-
+import { Avatar, IconButton, Menu, MenuItem, Typography } from '@mui/material'
+import { useAppDispatch, useAppSelector } from '../hooks'
+import { SyntheticEvent, useState } from 'react'
+import { userLogout } from '../reducers/userReducer'
 
 const UserMenu = () => {
-  const user = useAppSelector((state) => state.user)
+  const user = useAppSelector(state => state.user)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const dispatch = useAppDispatch()
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(event.currentTarget)
   }
   const open = Boolean(anchorEl)
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleLogout = (event: SyntheticEvent) => {
     event.preventDefault()
@@ -30,7 +28,7 @@ const UserMenu = () => {
       <IconButton onClick={handleOpen}>
         <Avatar>{user.username[0]}</Avatar>
       </IconButton>
-      <Menu 
+      <Menu
         open={open}
         anchorEl={anchorEl}
         anchorOrigin={{
@@ -43,8 +41,11 @@ const UserMenu = () => {
         }}
         onClose={handleClose}
       >
-        <Typography>user: {user.username}</Typography>
-        <MenuItem onClick={handleLogout} >Logout</MenuItem>
+        <Typography>
+          user:
+          {user.username}
+        </Typography>
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
     </>
   )

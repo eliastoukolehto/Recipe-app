@@ -1,5 +1,5 @@
-import { createTheme } from "@mui/material"
-import { lightGreen } from "@mui/material/colors"
+import { createTheme } from '@mui/material'
+import { lightGreen } from '@mui/material/colors'
 
 export const theme = createTheme({
 
@@ -11,6 +11,6 @@ export const theme = createTheme({
     },
     background: {
       default: lightGreen[50],
-    }
-  }
+    },
+  },
 })

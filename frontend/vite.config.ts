@@ -5,8 +5,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
-  const backend_uri = (env.APP_ENV === "container") 
-    ? "http://backend:4000/graphql"
+  const backend_uri = (env.APP_ENV === 'container')
+    ? 'http://backend:4000/graphql'
     : 'http://localhost:4000/graphql'
 
   return {
@@ -18,8 +18,7 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
         },
       },
-      watch: { usePolling: true }
-    }
+      watch: { usePolling: true },
+    },
   }
-
 })

@@ -4,6 +4,6 @@ export interface User {
   password: string
 }
 
-export type SafeUser = Omit<User, "password">;
+export type SafeUser = Omit<User, 'password'>
 
-export type UserFromInputs = Omit<User, "id">;
+export type UserFromInputs = Omit<User, 'id'>

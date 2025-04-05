@@ -1,12 +1,12 @@
-import { Sequelize } from "sequelize"
-import { DATABASE_URL, getEnv } from "./config"
-import { SequelizeStorage, Umzug } from "umzug"
+import { Sequelize } from 'sequelize'
+import { DATABASE_URL, getEnv } from './config'
+import { SequelizeStorage, Umzug } from 'umzug'
 
-//Remove logging during tests
-const logging = getEnv("NODE_ENV") === 'test'
+// Remove logging during tests
+const logging = getEnv('NODE_ENV') === 'test'
   ? false
   : console.log
-const logger = getEnv("NODE_ENV") === 'test'
+const logger = getEnv('NODE_ENV') === 'test'
   ? undefined
   : console
 
@@ -17,7 +17,8 @@ const connectToDatabase = async () => {
     await sequelize.authenticate()
     await migrator.up()
     console.log('connected to the database')
-  } catch (e) {
+  }
+  catch (e) {
     console.log(e)
     console.log('database connection failed')
     return process.exit(1)
@@ -37,5 +38,5 @@ export const migrator = new Umzug(migrationConf)
 export type Migration = typeof migrator._types.migration
 
 export default {
-  connectToDatabase, sequelize
+  connectToDatabase, sequelize,
 }

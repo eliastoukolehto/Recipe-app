@@ -9,17 +9,17 @@ const userSlice = createSlice({
   reducers: {
     setUser(_state, action: PayloadAction<SafeUser | null>) {
       return action.payload
-    }
-  }
+    },
+  },
 })
 
 export const { setUser } = userSlice.actions
 
 export const userLogout = (): ThunkAction<void, RootState, unknown, UnknownAction> => {
-  return async dispatch => {
+  return async (dispatch) => {
     window.localStorage.removeItem('recipeapp-userToken')
     dispatch(setUser(null))
-    dispatch(notify({severity: "success", message:`Logout Successful!`}))
+    dispatch(notify({ severity: 'success', message: `Logout Successful!` }))
   }
 }
 

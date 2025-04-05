@@ -9,7 +9,6 @@ import { apolloClient } from './graphql/apolloClient.ts'
 import { theme } from './theme.ts'
 import { ThemeProvider } from '@mui/material'
 
-
 const store = setupStore()
 
 createRoot(document.getElementById('root')!).render(
@@ -23,5 +22,5 @@ createRoot(document.getElementById('root')!).render(
         </Provider>
       </ApolloProvider>
     </BrowserRouter>
-  </StrictMode>
+  </StrictMode>,
 )
