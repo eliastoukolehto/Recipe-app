@@ -1,19 +1,24 @@
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import eslint from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import stylistic from '@stylistic/eslint-plugin'
 
 export default tseslint.config({
-  extends: [  
+  extends: [
     eslint.configs.recommended,
     ...tseslint.configs.strict,
-    ...tseslint.configs.stylistic
+    ...tseslint.configs.stylistic,
+    stylistic.configs.recommended,
   ],
+  plugins: {
+    '@stylistic': stylistic,
+  },
   rules: {
     '@typescript-eslint/no-unused-vars': [
       'error',
-      { 
-        'argsIgnorePattern': '^_', 
-      }
+      {
+        argsIgnorePattern: '^_',
+      },
     ],
   },
-  ignores: ["build/*"]
-});
+  ignores: ['build/*', 'coverage/*'],
+})

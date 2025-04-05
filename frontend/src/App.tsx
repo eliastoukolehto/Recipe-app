@@ -1,5 +1,5 @@
 import {
-  Routes, Route
+  Routes, Route,
 } from 'react-router-dom'
 import Home from './components/Home'
 import AppBar from './components/AppBar'
@@ -16,34 +16,32 @@ import { notify } from './reducers/notificationReducer'
 
 const App = () => {
   const dispatch = useAppDispatch()
-  const {refetch: getUser} = useQuery(USER, {skip: true})
+  const { refetch: getUser } = useQuery(USER, { skip: true })
 
   useEffect(() => {
-    const initializeUser = (async () => {
+    const initializeUser = async () => {
       const token = window.localStorage.getItem('recipeapp-userToken')
       if (token) {
         try {
-          const {data} = await getUser()
+          const { data } = await getUser()
           dispatch(setUser(data.me))
-        } catch {
-          dispatch(notify({severity: "error", message:`Instance expired, please login again`}))
+        }
+        catch {
+          dispatch(notify({ severity: 'error', message: `Instance expired, please login again` }))
           window.localStorage.removeItem('recipeapp-userToken')
         }
       }
-    })
+    }
     initializeUser()
-      
   }, [dispatch, getUser])
-
-
 
   return (
     <>
-      <CssBaseline/>
-      <AppBar/>
-      <Notification/>
+      <CssBaseline />
+      <AppBar />
+      <Notification />
 
-      <Container sx={{padding: 4}}>
+      <Container sx={{ padding: 4 }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

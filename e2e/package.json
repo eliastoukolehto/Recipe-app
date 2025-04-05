@@ -2,8 +2,10 @@
   "name": "e2e",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "playwright test --project=chromium"
+    "test": "playwright test --project=chromium",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -12,5 +14,11 @@
   "devDependencies": {
     "@playwright/test": "^1.51.1",
     "@types/node": "^22.13.13"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.24.0",
+    "@stylistic/eslint-plugin": "^4.2.0",
+    "eslint": "^9.24.0",
+    "typescript-eslint": "^8.29.0"
   }
 }

@@ -1,10 +1,10 @@
-import { 
+import {
   Model, DataTypes, InferAttributes, InferCreationAttributes,
-  CreationOptional
- } from "sequelize"
-import db from "../utils/db"
+  CreationOptional,
+} from 'sequelize'
+import db from '../utils/db'
 
-const sequelize = db.sequelize 
+const sequelize = db.sequelize
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>
@@ -18,20 +18,20 @@ User.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   username: {
     type: DataTypes.TEXT,
     allowNull: false,
     unique: true,
     validate: {
-      len: [3,14],
-      notContains: ' '
-    }
+      len: [3, 14],
+      notContains: ' ',
+    },
   },
   password: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: false,
   },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
@@ -39,8 +39,7 @@ User.init({
   sequelize,
   underscored: true,
   timestamps: true,
-  modelName: 'user'
+  modelName: 'user',
 })
 
-
-export default User 
+export default User

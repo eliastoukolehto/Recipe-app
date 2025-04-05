@@ -14,7 +14,7 @@ interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
 export const renderWithProviders = (
   ui: React.ReactElement,
   extendedRenderOptions: ExtendedRenderOptions = {},
-  mocks?: MockedResponse[]
+  mocks?: MockedResponse[],
 ) => {
   const {
     preloadedState = {},
@@ -22,14 +22,14 @@ export const renderWithProviders = (
     ...renderOptions
   } = extendedRenderOptions
 
-  const Wrapper = ( { children }: PropsWithChildren): JSX.Element => {
+  const Wrapper = ({ children }: PropsWithChildren): JSX.Element => {
     return (
-    <MockedProvider mocks={mocks}>
-      <BrowserRouter>
-        <Provider store={store}>{children}</Provider>
-     </BrowserRouter>
-    </MockedProvider>
+      <MockedProvider mocks={mocks}>
+        <BrowserRouter>
+          <Provider store={store}>{children}</Provider>
+        </BrowserRouter>
+      </MockedProvider>
     )
   }
-  return { store, ...render(ui, {wrapper: Wrapper, ...renderOptions})}
+  return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) }
 }
