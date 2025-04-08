@@ -3,13 +3,14 @@ import { User } from '../../models'
 import jwt from 'jsonwebtoken'
 import { getEnv } from '../../utils/config'
 import bcrypt from 'bcrypt'
+import { SafeUser } from '../../types/userTypes'
 
 // One capital letter, lowercase letter and number required, at least 8 letters
 const passwordRegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,30}$/
 
-const resolvers = {
+export const userResolvers = {
   Query: {
-    me: async (_root: unknown, _args: unknown, { currentUser }: { currentUser: object | null }) => { return currentUser },
+    me: async (_root: unknown, _args: unknown, { currentUser }: { currentUser: SafeUser | null }) => { return currentUser },
   },
   Mutation: {
     login: async (_root: unknown, { username, password }: { username: string, password: string }) => {
@@ -61,17 +62,5 @@ const resolvers = {
         })
       }
     },
-    reset: async (_root: unknown, _args: unknown) => {
-      const enabled = getEnv('NODE_ENV') === 'test'
-      if (!enabled) {
-        return 'Reset mutation disabled!'
-      }
-      else {
-        await User.truncate()
-        return 'Database has been reset!'
-      }
-    },
   },
 }
-
-export default resolvers

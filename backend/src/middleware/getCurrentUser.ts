@@ -1,10 +1,12 @@
 import { User } from '../models'
+import { SafeUser } from '../types/userTypes'
 import { tokenExtractor } from './tokenExtractor'
 import { Request } from 'express'
 
-export const getCurrentUser = async (req: Request | null): Promise<User | null> => {
+export const getCurrentUser = async (req: Request | null): Promise<SafeUser | null> => {
   const decodedToken = tokenExtractor(req)
   if (!decodedToken) return null
   const currentUser = await User.findByPk(decodedToken.id)
-  return currentUser
+  if (!currentUser) return null
+  return { id: currentUser.id, username: currentUser.username }
 }
