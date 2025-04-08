@@ -14,7 +14,8 @@ const NewRecipeSchema = z.object({
   })).max(10),
   steps: z.array(z.string().max(1000).trim()).max(10),
   serving: z.object({
-    amount: z.number().max(1000),
+    amount: z.number().max(100),
+    per: z.number().max(1000),
     unit: z.string().max(10).trim(),
   }).optional(),
   prepareTime: z.number().max(3000).optional(),

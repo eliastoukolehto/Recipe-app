@@ -11,6 +11,7 @@ export interface IngredientCategory {
 
 export interface Serving {
   amount: number
+  per: number
   unit: string
 }
 
