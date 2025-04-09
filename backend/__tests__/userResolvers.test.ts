@@ -6,10 +6,19 @@ import { Server } from 'http'
 
 let httpServer: Server
 
+export const meQuery = /* GraphQL */`
+query {
+  me {
+    username
+  }
+}
+`
+
 describe('userResolver tests', () => {
   beforeAll(async () => {
     await db.connectToDatabase()
     httpServer = await makeServer()
+    await request(httpServer).post('/').send({ query: resetQuery })
   })
 
   afterAll(async () => {
@@ -129,6 +138,24 @@ describe('userResolver tests', () => {
 
       expect(response.body.errors).toBeDefined()
       expect(response.body.errors[0].extensions.code).toBe('BAD_USER_INPUT')
+    })
+  })
+
+  describe('me query', () => {
+    beforeEach(async () => {
+      await request(httpServer).post('/').send({ query: resetQuery })
+    })
+
+    test('succeeds with valid auth token', async () => {
+      const variables = { username: 'TestUser', password: 'Password1' }
+      await request(httpServer).post('/').send({ query: createUserQuery, variables })
+      const response1 = await request(httpServer).post('/').send({ query: loginQuery, variables })
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: meQuery })
+        .set({ Authorization: `Bearer ${response1.body.data.login.value}` })
+      expect(response2.body.errors).toBeUndefined()
+      expect(response2.body.data.me.username).toBe('TestUser')
     })
   })
 })

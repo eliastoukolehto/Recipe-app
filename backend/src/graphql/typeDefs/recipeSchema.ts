@@ -14,12 +14,13 @@ const recipeTypeDefs = /* GraphQL */`
     ingredients: [Ingredient!]!
   }
   type Ingredient {
-    amount: Int
+    amount: Float
     unit: String
     name: String!
   }
   type Serving {
     amount: Int!
+    per: Int!
     unit: String!
   }
   input IngredientCategoryInput {
@@ -27,12 +28,13 @@ const recipeTypeDefs = /* GraphQL */`
     ingredients: [IngredientInput!]!
   }
   input IngredientInput {
-    amount: Int
+    amount: Float
     unit: String
     name: String!
   }
   input ServingInput {
     amount: Int!
+    per: Int!
     unit: String!
   }
   extend type Query {

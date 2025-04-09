@@ -32,6 +32,7 @@ export const recipeResolvers = {
       try {
         const newRecipe = toNewRecipe(args)
         const addedRecipe = await Recipe.create({ ...newRecipe, userId: user.id })
+        await addedRecipe.reload({ include: { model: User } })
         return addedRecipe
       }
       catch (error) {
