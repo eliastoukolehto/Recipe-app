@@ -1,10 +1,31 @@
-import { ApolloServer } from '@apollo/server'
-import resolvers from '../src/graphql/resolvers/resetResolver'
-import typeDefs from '../src/graphql/typeDefs/userSchema'
+export const createUserQuery = /* GraphQL */`
+  mutation createUser(
+    $username: String!
+    $password: String!
+  ) {
+    createUser(
+      username: $username
+      password: $password
+    ) {
+      id
+      username
+    }
+  }
+`
 
-export const createTestServer = () => {
-  return new ApolloServer({
-    typeDefs,
-    resolvers,
-  })
+export const loginQuery = /* GraphQL */`
+mutation login($username: String!, $password: String!) {
+  login(
+    username: $username
+    password: $password
+  ) {
+    value
+  }
 }
+`
+
+export const resetQuery = /* GraphQL */`
+mutation {
+  reset
+}
+`

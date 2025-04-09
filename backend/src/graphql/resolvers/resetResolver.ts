@@ -9,8 +9,8 @@ export const resetResolver = {
         return 'Reset mutation disabled!'
       }
       else {
-        await User.truncate()
-        await Recipe.truncate()
+        await User.truncate({ cascade: true })
+        await Recipe.truncate({ cascade: true })
         return 'Database has been reset!'
       }
     },
