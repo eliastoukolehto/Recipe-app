@@ -1,8 +1,10 @@
 import {
   Model, DataTypes, InferAttributes, InferCreationAttributes,
   CreationOptional,
+  NonAttribute,
 } from 'sequelize'
 import db from '../utils/db'
+import Recipe from './recipe'
 
 const sequelize = db.sequelize
 
@@ -12,6 +14,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare password: string
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
+  declare recipes?: NonAttribute<Recipe[]>
 }
 
 User.init({

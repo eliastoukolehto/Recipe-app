@@ -1,4 +1,4 @@
-const typeDefs = /* GraphQL */`
+const userTypeDefs = /* GraphQL */`
   type User {
     username: String!
     id: ID!
@@ -6,7 +6,7 @@ const typeDefs = /* GraphQL */`
   type Token {
   value: String!
   }
-  type Mutation {
+  extend type Mutation {
     login(
       username: String!
       password: String!
@@ -17,9 +17,9 @@ const typeDefs = /* GraphQL */`
     ): User
     reset: String 
   },
-  type Query {
+  extend type Query {
     me: User
   }
 `
 
-export default typeDefs
+export default userTypeDefs
