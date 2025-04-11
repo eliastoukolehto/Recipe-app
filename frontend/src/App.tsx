@@ -13,6 +13,7 @@ import { USER } from './graphql/queries/userQueries'
 import { useEffect } from 'react'
 import { Container, CssBaseline } from '@mui/material'
 import { notify } from './reducers/notificationReducer'
+import RecipeForm from './components/RecipeForm'
 
 const App = () => {
   const dispatch = useAppDispatch()
@@ -46,6 +47,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/newrecipe" element={<RecipeForm />} />
         </Routes>
       </Container>
     </>
