@@ -13,7 +13,7 @@ import { USER } from './graphql/queries/userQueries'
 import { useEffect } from 'react'
 import { Container, CssBaseline } from '@mui/material'
 import { notify } from './reducers/notificationReducer'
-import RecipeForm from './components/RecipeForm'
+import RecipeForm from './components/RecipeForm/RecipeForm'
 
 const App = () => {
   const dispatch = useAppDispatch()
