@@ -1,12 +1,13 @@
-/* import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../hooks'
-import { notify } from '../reducers/notificationReducer' */
+import { useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '../../hooks'
+import { notify } from '../../reducers/notificationReducer'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 import { RecipeFromInputs } from '../../types/recipe'
 import * as Yup from 'yup'
-import { Button, Grid2 as Grid, IconButton, TextField, Typography } from '@mui/material'
+import { Button, FormHelperText, Grid2 as Grid, IconButton, TextField, Typography } from '@mui/material'
 import { IngredientCategoryForm } from './RecipeFormComponents'
 import { Add, Remove } from '@mui/icons-material'
+import { useEffect } from 'react'
 
 const emptyIngredient = {
   amount: 1,
@@ -19,19 +20,23 @@ const emptyIngredientCategory = {
   ingredients: [JSON.parse(JSON.stringify(emptyIngredient))],
 }
 
+// Could use more descriptive error messaging. Maybe switching Yup to Zod would help
+// TODO: make serving truly optional
 const RecipeForm = () => {
-  /* const user = useAppSelector(state => state.user)
+  const user = useAppSelector(state => state.user)
   const dispatch = useAppDispatch()
-  const navigate = useNavigate() */
+  const navigate = useNavigate()
+
+  useEffect (() => {
+    if (!user) {
+      dispatch(notify({ severity: 'info', message: `Login before adding new recipes` }))
+      navigate('/')
+    }
+  })
 
   const handleSubmit = (values: RecipeFromInputs) => {
     console.log('values:', values)
   }
-  // add after completed
-  /* if (!user) {
-    dispatch(notify({ severity: 'info', message: `Login before adding new recipes` }))
-    navigate('/')
-  } */
 
   const initialValues = {
     name: '',
@@ -46,7 +51,7 @@ const RecipeForm = () => {
     prepareTime: 0,
   }
 
-  const validationSchema = Yup.object().shape({
+  const validationSchema = Yup.object<RecipeFromInputs>().shape({
     name: Yup.string().required('Name required'),
     description: Yup.string(),
     ingredientCategories: Yup.array().of(Yup.object({
@@ -54,10 +59,10 @@ const RecipeForm = () => {
       ingredients: Yup.array().of(Yup.object({
         amount: Yup.number(),
         unit: Yup.string(),
-        name: Yup.string().required('Ingredient must have a name'),
+        name: Yup.string().required('Ingredients must have a name'),
       })).min(1, 'At least one ingredient required'),
     }).required()).required(),
-    steps: Yup.array().of(Yup.string()).min(1, 'at least one step required'),
+    steps: Yup.array().of(Yup.string().required('step can\'t be empty')).min(1, 'at least one step required'),
     serving: Yup.object({
       amount: Yup.number().required('Required'),
       per: Yup.number().required('Required'),
@@ -125,6 +130,7 @@ const RecipeForm = () => {
                                 multiline
                                 maxRows={4}
                                 minRows={2}
+                                error={Boolean(formik.errors.steps)}
                                 value={formik.values.steps[Index]}
                                 onChange={formik.handleChange}
                               />
@@ -155,7 +161,9 @@ const RecipeForm = () => {
                     <TextField
                       label="Amount"
                       name="serving.amount"
+                      type="number"
                       fullWidth
+                      error={Boolean(formik.errors.serving)}
                       value={formik.values.serving.amount}
                       onChange={formik.handleChange}
                     />
@@ -164,7 +172,9 @@ const RecipeForm = () => {
                     <TextField
                       label="Per person"
                       name="serving.per"
+                      type="number"
                       fullWidth
+                      error={Boolean(formik.errors.serving)}
                       value={formik.values.serving.per}
                       onChange={formik.handleChange}
                     />
@@ -174,17 +184,24 @@ const RecipeForm = () => {
                       label="Unit"
                       name="serving.unit"
                       fullWidth
+                      error={Boolean(formik.errors.serving)}
                       value={formik.values.serving.unit}
                       onChange={formik.handleChange}
                     />
                   </Grid>
+                  {Boolean(formik.errors.serving) && (
+                    <FormHelperText error>Required</FormHelperText>
+                  )}
+                </Grid>
+                <Grid container direction="row" rowSpacing={2} columnSpacing={0} alignItems="center">
                   <Grid size={12}>
                     <Typography>Prepare time</Typography>
                   </Grid>
                   <Grid size={12}>
                     <TextField
                       label="Prepare time"
-                      name="serving.prepareTime"
+                      name="prepareTime"
+                      type="number"
                       fullWidth
                       value={formik.values.prepareTime}
                       onChange={formik.handleChange}
@@ -195,6 +212,9 @@ const RecipeForm = () => {
             </Grid>
           </Grid>
           <Grid size={12}>
+            {!formik.isValid && (
+              <FormHelperText error>Missing form values</FormHelperText>
+            )}
             <Button type="submit" variant="contained">
               Create
             </Button>

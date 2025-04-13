@@ -28,10 +28,11 @@ const IngredientForm = ({ cIndex, category, cArrayHelpers }: { cIndex: number, c
                 <div key={iIndex}>
                   <br />
                   <Grid container direction="row" spacing={0} alignItems="center">
-                    <Grid size={2}>
+                    <Grid size={3}>
                       <TextField
                         label="Amount"
                         name={`ingredientCategories[${cIndex}].ingredients[${iIndex}].amount`}
+                        type="number"
                         fullWidth
                         value={formik.values.ingredientCategories[cIndex].ingredients[iIndex].amount}
                         onChange={formik.handleChange}
@@ -46,11 +47,12 @@ const IngredientForm = ({ cIndex, category, cArrayHelpers }: { cIndex: number, c
                         onChange={formik.handleChange}
                       />
                     </Grid>
-                    <Grid size={6}>
+                    <Grid size={5}>
                       <TextField
                         label="Name"
                         name={`ingredientCategories[${cIndex}].ingredients[${iIndex}].name`}
                         fullWidth
+                        error={Boolean(formik.errors.ingredientCategories)}
                         value={formik.values.ingredientCategories[cIndex].ingredients[iIndex].name}
                         onChange={formik.handleChange}
                       />
