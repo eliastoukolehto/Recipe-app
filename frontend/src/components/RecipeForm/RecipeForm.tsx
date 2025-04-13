@@ -7,7 +7,8 @@ import * as Yup from 'yup'
 import { Button, FormHelperText, Grid2 as Grid, IconButton, TextField, Typography } from '@mui/material'
 import { IngredientCategoryForm } from './RecipeFormComponents'
 import { Add, Remove } from '@mui/icons-material'
-import { useEffect } from 'react'
+import { useMutation } from '@apollo/client'
+import { ADD_RECIPE } from '../../graphql/queries/recipeQueries'
 
 const emptyIngredient = {
   amount: 1,
@@ -21,21 +22,23 @@ const emptyIngredientCategory = {
 }
 
 // Could use more descriptive error messaging. Maybe switching Yup to Zod would help
-// TODO: make serving truly optional
+// TODO: make serving field optional
 const RecipeForm = () => {
   const user = useAppSelector(state => state.user)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const [addRecipe] = useMutation(ADD_RECIPE)
 
-  useEffect (() => {
-    if (!user) {
-      dispatch(notify({ severity: 'info', message: `Login before adding new recipes` }))
-      navigate('/')
+  const handleSubmit = async (values: RecipeFromInputs) => {
+    try {
+      const { data } = await addRecipe({ variables: values })
+      const recipeId = data.createRecipe.id
+      dispatch(notify({ severity: 'success', message: `Adding recipe succeeded` }))
+      navigate(`/recipes/${recipeId}`)
     }
-  })
-
-  const handleSubmit = (values: RecipeFromInputs) => {
-    console.log('values:', values)
+    catch {
+      dispatch(notify({ severity: 'error', message: `Adding recipe failed: unknown error` }))
+    }
   }
 
   const initialValues = {
@@ -77,6 +80,10 @@ const RecipeForm = () => {
     validateOnChange: false,
     onSubmit: handleSubmit,
   })
+
+  if (!user) {
+    return <div>Only users who are logged in can add new recipes</div>
+  }
 
   return (
     <FormikProvider value={formik}>
@@ -159,7 +166,7 @@ const RecipeForm = () => {
                 <Grid container direction="row" rowSpacing={2} columnSpacing={0} alignItems="center">
                   <Grid size={4}>
                     <TextField
-                      label="Amount"
+                      label="Servings"
                       name="serving.amount"
                       type="number"
                       fullWidth
