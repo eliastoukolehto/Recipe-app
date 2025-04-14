@@ -23,6 +23,7 @@ const emptyIngredientCategory = {
 
 // Could use more descriptive error messaging. Maybe switching Yup to Zod would help
 // TODO: make serving field optional
+// BUG: Ingreient amount cannot be empty
 const RecipeForm = () => {
   const user = useAppSelector(state => state.user)
   const dispatch = useAppDispatch()
@@ -202,7 +203,7 @@ const RecipeForm = () => {
                 </Grid>
                 <Grid container direction="row" rowSpacing={2} columnSpacing={0} alignItems="center">
                   <Grid size={12}>
-                    <Typography>Prepare time</Typography>
+                    <Typography>Prepare time (minutes)</Typography>
                   </Grid>
                   <Grid size={12}>
                     <TextField

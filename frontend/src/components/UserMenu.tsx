@@ -26,7 +26,7 @@ const UserMenu = () => {
   return (
     <>
       <IconButton onClick={handleOpen}>
-        <Avatar>{user.username[0]}</Avatar>
+        <Avatar sx={{ bgcolor: 'primary.dark' }}>{user.username[0]}</Avatar>
       </IconButton>
       <Menu
         open={open}
