@@ -6,7 +6,8 @@ import { RecipeFromInputs } from '../../types/recipe'
 import * as Yup from 'yup'
 import { Button, FormHelperText, Grid2 as Grid, IconButton, TextField, Typography } from '@mui/material'
 import { IngredientCategoryForm } from './RecipeFormComponents'
-import { Add, Remove } from '@mui/icons-material'
+import AddIcon from '@mui/icons-material/Add'
+import RemoveIcon from '@mui/icons-material/Remove'
 import { useMutation } from '@apollo/client'
 import { ADD_RECIPE } from '../../graphql/queries/recipeQueries'
 
@@ -21,7 +22,7 @@ const emptyIngredientCategory = {
   ingredients: [JSON.parse(JSON.stringify(emptyIngredient))],
 }
 
-// Could use more descriptive error messaging. Maybe switching Yup to Zod would help
+// TODO: replace forms with fewer fields and parse them, increasing performance and reducing bugs
 // TODO: make serving field optional
 // BUG: Ingreient amount cannot be empty
 const RecipeForm = () => {
@@ -148,11 +149,11 @@ const RecipeForm = () => {
                         <Grid container direction="row-reverse" spacing={2}>
                           {formik.values.steps.length > 1 && (
                             <IconButton onClick={() => ArrayHelpers.pop()}>
-                              <Remove />
+                              <RemoveIcon />
                             </IconButton>
                           )}
                           <IconButton onClick={() => ArrayHelpers.push('')}>
-                            <Add />
+                            <AddIcon />
                           </IconButton>
                         </Grid>
                       </div>

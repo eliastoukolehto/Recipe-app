@@ -1,7 +1,8 @@
 import { Button, Grid2 as Grid, IconButton, TextField, Typography } from '@mui/material'
 import { FieldArray, FieldArrayRenderProps, FormikProvider, useFormikContext } from 'formik'
 import { IngredientCategory, RecipeFromInputs } from '../../types/recipe'
-import { Add, Remove } from '@mui/icons-material'
+import AddIcon from '@mui/icons-material/Add'
+import RemoveIcon from '@mui/icons-material/Remove'
 
 const emptyIngredient = {
   amount: 1,
@@ -60,7 +61,7 @@ const IngredientForm = ({ cIndex, category, cArrayHelpers }: { cIndex: number, c
                     <Grid size={1}>
                       {category.ingredients.length > 1 && (
                         <IconButton onClick={() => iArrayHelpers.remove(iIndex)}>
-                          <Remove />
+                          <RemoveIcon />
                         </IconButton>
                       )}
                     </Grid>
@@ -70,7 +71,7 @@ const IngredientForm = ({ cIndex, category, cArrayHelpers }: { cIndex: number, c
             </Grid>
             <Grid size={12}>
               <IconButton onClick={() => iArrayHelpers.push(JSON.parse(JSON.stringify(emptyIngredient)))}>
-                <Add />
+                <AddIcon />
               </IconButton>
             </Grid>
             <Grid size={12}>

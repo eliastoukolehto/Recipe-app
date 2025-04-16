@@ -1,7 +1,5 @@
-import '@testing-library/jest-dom/vitest'
-import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
-import Login from './../../src/components/Login'
+import Login from '../../src/components/Login'
 import { renderWithProviders } from '../test-utils'
 import userEvent from '@testing-library/user-event'
 import { LOGIN, USER } from '../../src/graphql/queries/userQueries'
