@@ -1,4 +1,4 @@
-import { Button, Toolbar, Typography } from '@mui/material'
+import { Box, Button, Toolbar, Typography } from '@mui/material'
 import MuiAppBar from '@mui/material/AppBar'
 import { Link } from 'react-router-dom'
 import { useAppSelector } from '../hooks'
@@ -10,14 +10,23 @@ const AppBar = () => {
   return (
     <MuiAppBar position="static">
       <Toolbar>
-        <Typography
-          variant="h6"
-          component={Link}
-          to="/"
-          sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}
-        >
-          Recipe-app
-        </Typography>
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            component={Link}
+            to="/"
+            sx={{ mx: 2, textDecoration: 'none', color: 'inherit' }}
+          >
+            Recipe-app
+          </Typography>
+          {user && (
+            <>
+              <Button color="inherit" component={Link} to="/newrecipe">
+                New Recipe
+              </Button>
+            </>
+          )}
+        </Box>
         {!user
           && (
             <>
@@ -29,8 +38,9 @@ const AppBar = () => {
               </Button>
             </>
           )}
-        {user
-          && <UserMenu />}
+        {user && (
+          <UserMenu />
+        )}
       </Toolbar>
     </MuiAppBar>
   )
