@@ -6,7 +6,7 @@ import { SafeUser } from '../../types/userTypes'
 export const recipeResolvers = {
   Query: {
     recipes: async (_root: unknown, { page }: { page: number }) => {
-      const limit = 20
+      const limit = 12
       const offset = page * limit
 
       const recipes = await Recipe.findAndCountAll({

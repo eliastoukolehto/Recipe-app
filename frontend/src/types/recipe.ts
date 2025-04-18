@@ -29,3 +29,5 @@ export interface Recipe {
 }
 
 export type RecipeFromInputs = Omit<Recipe, 'user' | 'id'>
+
+export type RecipeListItem = Omit<Recipe, 'ingredientCategories' | 'steps'>
