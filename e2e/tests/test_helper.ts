@@ -9,7 +9,27 @@ const createUser = async (page: Page, username: string, password: string) => {
   await page.getByRole('link', { name: /recipe-app/i }).click()
 }
 
+const createUserAndLogin = async (page: Page, username: string, password: string) => {
+  await createUser(page, username, password)
+  await page.getByRole('link', { name: 'Login' }).click()
+  await page.getByLabel('Username').fill(username)
+  await page.getByLabel('Password').fill(password)
+  await page.getByRole('button', { name: 'Login' }).click()
+}
+
+const createRecipe = async (page: Page, name: string, description: string) => {
+  await page.getByRole('link', { name: 'New Recipe' }).click()
+  await page.getByLabel('Name', { exact: true }).nth(0).fill(name)
+  await page.getByLabel('Description').fill(description)
+  await page.getByLabel('Step').fill('Testrecipe Step')
+  await page.getByLabel('Name', { exact: true }).nth(1).fill('TestIngredient')
+  await page.getByLabel('Unit').nth(1).fill('dl')
+  await page.getByRole('button', { name: 'Create' }).click()
+  await page.waitForURL('**/recipes/**')
+  await page.getByRole('link', { name: /recipe-app/i }).click()
+}
+
 const backendURL = 'http://localhost:4000'
 const frontendURL = 'http://localhost:5173'
 
-export { createUser, backendURL, frontendURL }
+export { createUser, createUserAndLogin, createRecipe, backendURL, frontendURL }
