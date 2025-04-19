@@ -5,8 +5,15 @@ import { SafeUser } from '../../types/userTypes'
 
 export const recipeResolvers = {
   Query: {
-    recipes: async (_root: unknown, _args: unknown) => {
-      const recipes = Recipe.findAll({ include: { model: User } })
+    recipes: async (_root: unknown, { page }: { page: number }) => {
+      const limit = 12
+      const offset = page * limit
+
+      const recipes = await Recipe.findAndCountAll({
+        include: { model: User },
+        limit: limit,
+        offset: offset,
+      })
       return recipes
     },
     recipe: async (_root: unknown, { id }: { id: number }) => {

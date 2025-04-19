@@ -121,7 +121,9 @@ jobs:
           npm run dev &
     
       - name: install playwright dependencies
-        run: npx playwright install --with-deps
+        run: |
+          cd e2e
+          npx playwright install --with-deps
       
       - name: run e2e tests
         run: |

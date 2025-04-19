@@ -54,3 +54,24 @@ export const GET_RECIPE = gql`
     }
   }
 `
+
+export const GET_RECIPES = gql`
+  query recipes (
+    $page: Int!
+  ) {
+    recipes (
+      page: $page
+    ) {
+    count
+    rows {
+      id
+      name
+      description
+      user {
+        id
+        username
+      }
+    }
+    }
+  }
+`

@@ -23,6 +23,10 @@ const recipeTypeDefs = /* GraphQL */`
     per: Int!
     unit: String!
   }
+  type RecipeListPage {
+    count: Int
+    rows: [Recipe]
+  } 
   input IngredientCategoryInput {
     name: String
     ingredients: [IngredientInput!]!
@@ -38,7 +42,9 @@ const recipeTypeDefs = /* GraphQL */`
     unit: String!
   }
   extend type Query {
-    recipes: [Recipe]
+    recipes(
+      page: Int!
+    ): RecipeListPage
     recipe(
       id: ID!
     ): Recipe
