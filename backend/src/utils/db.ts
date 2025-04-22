@@ -10,6 +10,11 @@ const logger = getEnv('NODE_ENV') === 'test'
   ? undefined
   : console
 
+// migration files are in different location after compiling
+const migrationsPath = getEnv('NODE_ENV') === 'production'
+  ? 'build/src/migrations/*.js'
+  : 'src/migrations/*.ts'
+
 const sequelize = new Sequelize(DATABASE_URL, { logging })
 
 const connectToDatabase = async () => {
@@ -27,7 +32,7 @@ const connectToDatabase = async () => {
 }
 
 const migrationConf = {
-  migrations: { glob: 'src/migrations/*.ts' },
+  migrations: { glob: migrationsPath },
   context: sequelize.getQueryInterface(),
   storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
   logger,
