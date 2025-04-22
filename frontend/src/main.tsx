@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import { Provider } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { setupStore } from './store.ts'
 import { ApolloProvider } from '@apollo/client'
 import { apolloClient } from './graphql/apolloClient.ts'
@@ -13,7 +13,7 @@ const store = setupStore()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <ApolloProvider client={apolloClient}>
         <Provider store={store}>
           <ThemeProvider theme={theme}>
@@ -21,6 +21,6 @@ createRoot(document.getElementById('root')!).render(
           </ThemeProvider>
         </Provider>
       </ApolloProvider>
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>,
 )
