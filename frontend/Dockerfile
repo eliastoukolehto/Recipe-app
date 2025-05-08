@@ -1,4 +1,4 @@
-FROM node:22 AS build-stage
+FROM node:22-slim AS build-stage
 
 WORKDIR /usr/src/app
 
@@ -8,7 +8,7 @@ RUN npm ci
 
 RUN npm run build
 
-FROM node:22 AS prod
+FROM node:22-slim AS prod
 
 WORKDIR /usr/src/app
 
