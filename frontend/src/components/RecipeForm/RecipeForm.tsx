@@ -24,15 +24,15 @@ const emptyIngredientCategory = {
 
 // TODO: replace forms with fewer fields and parse them, increasing performance and reducing bugs
 // TODO: make serving field optional
-// BUG: Ingreient amount cannot be empty
 const RecipeForm = () => {
   const user = useAppSelector(state => state.user)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const [addRecipe] = useMutation(ADD_RECIPE)
 
-  const handleSubmit = async (values: RecipeFromInputs) => {
+  const handleSubmit = async (inputs: RecipeFromInputs) => {
     try {
+      const values = validationSchema.cast(inputs)
       const { data } = await addRecipe({ variables: values })
       const recipeId = data.createRecipe.id
       dispatch(notify({ severity: 'success', message: `Adding recipe succeeded` }))
@@ -62,7 +62,7 @@ const RecipeForm = () => {
     ingredientCategories: Yup.array().of(Yup.object({
       name: Yup.string(),
       ingredients: Yup.array().of(Yup.object({
-        amount: Yup.number(),
+        amount: Yup.number().nullable().transform((value, original) => (original === '' ? undefined : value)),
         unit: Yup.string(),
         name: Yup.string().required('Ingredients must have a name'),
       })).min(1, 'At least one ingredient required'),
