@@ -22,8 +22,14 @@ const emptyIngredientCategory = {
   ingredients: [JSON.parse(JSON.stringify(emptyIngredient))],
 }
 
-// TODO: replace forms with fewer fields and parse them, increasing performance and reducing bugs
-// TODO: make serving field optional
+const emptyServing = {
+  amount: 0,
+  unit: '',
+  per: 0,
+}
+
+// TODO: more error messages and stricter validations
+// TODO: ingredient & step caps
 const RecipeForm = () => {
   const user = useAppSelector(state => state.user)
   const dispatch = useAppDispatch()
@@ -72,7 +78,7 @@ const RecipeForm = () => {
       amount: Yup.number().required('Required'),
       per: Yup.number().required('Required'),
       unit: Yup.string().required('Required'),
-    }),
+    }).default(undefined).nullable(),
     prepareTime: Yup.number(),
   })
 
@@ -161,47 +167,69 @@ const RecipeForm = () => {
 
                   </FieldArray>
                 </Grid>
-                <Grid size={12}>
-                  <Typography>Serving</Typography>
-                  <br />
-                </Grid>
-                <Grid container direction="row" rowSpacing={2} columnSpacing={0} alignItems="center">
-                  <Grid size={4}>
-                    <TextField
-                      label="Servings"
-                      name="serving.amount"
-                      type="number"
-                      fullWidth
-                      error={Boolean(formik.errors.serving)}
-                      value={formik.values.serving.amount}
-                      onChange={formik.handleChange}
-                    />
-                  </Grid>
-                  <Grid size={4}>
-                    <TextField
-                      label="Per person"
-                      name="serving.per"
-                      type="number"
-                      fullWidth
-                      error={Boolean(formik.errors.serving)}
-                      value={formik.values.serving.per}
-                      onChange={formik.handleChange}
-                    />
-                  </Grid>
-                  <Grid size={4}>
-                    <TextField
-                      label="Unit"
-                      name="serving.unit"
-                      fullWidth
-                      error={Boolean(formik.errors.serving)}
-                      value={formik.values.serving.unit}
-                      onChange={formik.handleChange}
-                    />
-                  </Grid>
-                  {Boolean(formik.errors.serving) && (
-                    <FormHelperText error>Required</FormHelperText>
-                  )}
-                </Grid>
+                {formik.values.serving && (
+                  <div>
+                    <Grid size={12}>
+                      <Typography>Serving</Typography>
+                      <br />
+                    </Grid>
+                    <Grid container direction="row" rowSpacing={2} columnSpacing={0} alignItems="center">
+                      <Grid size={4}>
+                        <TextField
+                          label="Servings"
+                          name="serving.amount"
+                          type="number"
+                          fullWidth
+                          error={Boolean(formik.errors.serving)}
+                          value={formik.values.serving.amount}
+                          onChange={formik.handleChange}
+                        />
+                      </Grid>
+                      <Grid size={4}>
+                        <TextField
+                          label="Per person"
+                          name="serving.per"
+                          type="number"
+                          fullWidth
+                          error={Boolean(formik.errors.serving)}
+                          value={formik.values.serving.per}
+                          onChange={formik.handleChange}
+                        />
+                      </Grid>
+                      <Grid size={4}>
+                        <TextField
+                          label="Unit"
+                          name="serving.unit"
+                          fullWidth
+                          error={Boolean(formik.errors.serving)}
+                          value={formik.values.serving.unit}
+                          onChange={formik.handleChange}
+                        />
+                      </Grid>
+                      {Boolean(formik.errors.serving) && (
+                        <FormHelperText error>Required</FormHelperText>
+                      )}
+                      <Grid size={12}>
+                        <Button
+                          variant="contained"
+                          color="warning"
+                          onClick={() => formik.setFieldValue('serving', undefined)}
+                        >
+                          Remove serving
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </div>
+                )}
+                {!formik.values.serving && (
+                  <Button
+                    variant="contained"
+                    onClick={() => formik.setFieldValue('serving', emptyServing)}
+                  >
+                    Add serving
+                  </Button>
+                )}
+                <br />
                 <Grid container direction="row" rowSpacing={2} columnSpacing={0} alignItems="center">
                   <Grid size={12}>
                     <Typography>Prepare time (minutes)</Typography>
@@ -230,6 +258,7 @@ const RecipeForm = () => {
           </Grid>
         </Grid>
       </form>
+      <div>{JSON.stringify(formik.errors)}</div>
     </FormikProvider>
   )
 }
