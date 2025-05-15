@@ -28,9 +28,9 @@ const emptyServing = {
   per: 0,
 }
 
-// TODO: more error messages and stricter validations
-// TODO: ingredient & step caps
 const RecipeForm = () => {
+  // This component could use refactoring to increase readability
+
   const user = useAppSelector(state => state.user)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -54,32 +54,28 @@ const RecipeForm = () => {
     description: '',
     ingredientCategories: [emptyIngredientCategory],
     steps: [''],
-    serving: {
-      amount: 0,
-      unit: '',
-      per: 0,
-    },
+    serving: emptyServing,
     prepareTime: 0,
   }
 
   const validationSchema = Yup.object<RecipeFromInputs>().shape({
-    name: Yup.string().required('Name required'),
+    name: Yup.string().required('Name required').max(100, 'Name is too long'),
     description: Yup.string(),
     ingredientCategories: Yup.array().of(Yup.object({
-      name: Yup.string(),
+      name: Yup.string().max(20, 'Too long'),
       ingredients: Yup.array().of(Yup.object({
-        amount: Yup.number().nullable().transform((value, original) => (original === '' ? undefined : value)),
-        unit: Yup.string(),
-        name: Yup.string().required('Ingredients must have a name'),
-      })).min(1, 'At least one ingredient required'),
+        amount: Yup.number().nullable().transform((value, original) => (original === '' ? undefined : value)).min(0).max(10000),
+        unit: Yup.string().max(10),
+        name: Yup.string().required('Ingredients must have a name').max(20, 'Ingredient name too long'),
+      })),
     }).required()).required(),
-    steps: Yup.array().of(Yup.string().required('step can\'t be empty')).min(1, 'at least one step required'),
+    steps: Yup.array().of(Yup.string().required('Step can\'t be empty').max(1000, 'Too long')).min(1, 'at least one step required'),
     serving: Yup.object({
-      amount: Yup.number().required('Required'),
-      per: Yup.number().required('Required'),
-      unit: Yup.string().required('Required'),
+      amount: Yup.number().required('Servings required').min(1, 'Servings must be more than 1').max(100, 'Servings must be less than 100'),
+      per: Yup.number().required('Per person required').min(1, 'Serving per person must be more than 1').max(1000, 'Serving per person must be less than 1000'),
+      unit: Yup.string().required('Unit required').max(10, 'Unit too long'),
     }).default(undefined).nullable(),
-    prepareTime: Yup.number(),
+    prepareTime: Yup.number().nullable().transform((value, original) => ((original === '' || original === 0) ? undefined : value)).max(3000, 'Too large').min(0, 'Too small'),
   })
 
   const formik = useFormik({
@@ -145,7 +141,8 @@ const RecipeForm = () => {
                                 multiline
                                 maxRows={4}
                                 minRows={2}
-                                error={Boolean(formik.errors.steps)}
+                                error={Boolean(formik.errors.steps?.[Index])}
+                                helperText={formik.errors.steps?.[Index]}
                                 value={formik.values.steps[Index]}
                                 onChange={formik.handleChange}
                               />
@@ -158,9 +155,11 @@ const RecipeForm = () => {
                               <RemoveIcon />
                             </IconButton>
                           )}
-                          <IconButton onClick={() => ArrayHelpers.push('')}>
-                            <AddIcon />
-                          </IconButton>
+                          {formik.values.steps.length < 10 && (
+                            <IconButton onClick={() => ArrayHelpers.push('')}>
+                              <AddIcon />
+                            </IconButton>
+                          )}
                         </Grid>
                       </div>
                     )}
@@ -180,7 +179,7 @@ const RecipeForm = () => {
                           name="serving.amount"
                           type="number"
                           fullWidth
-                          error={Boolean(formik.errors.serving)}
+                          error={Boolean(formik.errors.serving?.amount)}
                           value={formik.values.serving.amount}
                           onChange={formik.handleChange}
                         />
@@ -191,7 +190,7 @@ const RecipeForm = () => {
                           name="serving.per"
                           type="number"
                           fullWidth
-                          error={Boolean(formik.errors.serving)}
+                          error={Boolean(formik.errors.serving?.per)}
                           value={formik.values.serving.per}
                           onChange={formik.handleChange}
                         />
@@ -201,13 +200,19 @@ const RecipeForm = () => {
                           label="Unit"
                           name="serving.unit"
                           fullWidth
-                          error={Boolean(formik.errors.serving)}
+                          error={Boolean(formik.errors.serving?.unit)}
                           value={formik.values.serving.unit}
                           onChange={formik.handleChange}
                         />
                       </Grid>
                       {Boolean(formik.errors.serving) && (
-                        <FormHelperText error>Required</FormHelperText>
+                        <FormHelperText error>
+                          {formik.errors.serving?.amount === undefined
+                            ? (formik.errors.serving?.per === undefined
+                                ? formik.errors.serving?.unit
+                                : formik.errors.serving?.per)
+                            : formik.errors.serving?.amount}
+                        </FormHelperText>
                       )}
                       <Grid size={12}>
                         <Button
@@ -241,6 +246,8 @@ const RecipeForm = () => {
                       type="number"
                       fullWidth
                       value={formik.values.prepareTime}
+                      error={Boolean(formik.errors.prepareTime)}
+                      helperText={formik.errors.prepareTime}
                       onChange={formik.handleChange}
                     />
                   </Grid>
@@ -250,7 +257,7 @@ const RecipeForm = () => {
           </Grid>
           <Grid size={12}>
             {!formik.isValid && (
-              <FormHelperText error>Missing form values</FormHelperText>
+              <FormHelperText error>Check form values</FormHelperText>
             )}
             <Button type="submit" variant="contained">
               Create
@@ -258,7 +265,6 @@ const RecipeForm = () => {
           </Grid>
         </Grid>
       </form>
-      <div>{JSON.stringify(formik.errors)}</div>
     </FormikProvider>
   )
 }

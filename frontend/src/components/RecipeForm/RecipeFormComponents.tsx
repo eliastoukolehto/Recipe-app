@@ -1,5 +1,5 @@
-import { Button, Grid2 as Grid, IconButton, TextField, Typography } from '@mui/material'
-import { FieldArray, FieldArrayRenderProps, FormikProvider, useFormikContext } from 'formik'
+import { Button, FormHelperText, Grid2 as Grid, IconButton, TextField, Typography } from '@mui/material'
+import { FieldArray, FieldArrayRenderProps, FormikProvider, getIn, useFormikContext } from 'formik'
 import { IngredientCategory, RecipeFromInputs } from '../../types/recipe'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
@@ -35,6 +35,7 @@ const IngredientForm = ({ cIndex, category, cArrayHelpers }: { cIndex: number, c
                         name={`ingredientCategories[${cIndex}].ingredients[${iIndex}].amount`}
                         type="number"
                         fullWidth
+                        error={Boolean(getIn(formik.errors, `ingredientCategories[${cIndex}].ingredients[${iIndex}].amount`))}
                         value={formik.values.ingredientCategories[cIndex].ingredients[iIndex].amount}
                         onChange={formik.handleChange}
                       />
@@ -44,6 +45,7 @@ const IngredientForm = ({ cIndex, category, cArrayHelpers }: { cIndex: number, c
                         label="Unit"
                         name={`ingredientCategories[${cIndex}].ingredients[${iIndex}].unit`}
                         fullWidth
+                        error={Boolean(getIn(formik.errors, `ingredientCategories[${cIndex}].ingredients[${iIndex}].unit`))}
                         value={formik.values.ingredientCategories[cIndex].ingredients[iIndex].unit}
                         onChange={formik.handleChange}
                       />
@@ -53,7 +55,7 @@ const IngredientForm = ({ cIndex, category, cArrayHelpers }: { cIndex: number, c
                         label="Name"
                         name={`ingredientCategories[${cIndex}].ingredients[${iIndex}].name`}
                         fullWidth
-                        error={Boolean(formik.errors.ingredientCategories)}
+                        error={Boolean(getIn(formik.errors, `ingredientCategories[${cIndex}].ingredients[${iIndex}].name`))}
                         value={formik.values.ingredientCategories[cIndex].ingredients[iIndex].name}
                         onChange={formik.handleChange}
                       />
@@ -65,14 +67,19 @@ const IngredientForm = ({ cIndex, category, cArrayHelpers }: { cIndex: number, c
                         </IconButton>
                       )}
                     </Grid>
+                    {getIn(formik.errors, `ingredientCategories[${cIndex}].ingredients[${iIndex}].name`) && (
+                      <FormHelperText error>{getIn(formik.errors, `ingredientCategories[${cIndex}].ingredients[${iIndex}].name`)}</FormHelperText>
+                    )}
                   </Grid>
                 </div>
               ))}
             </Grid>
             <Grid size={12}>
-              <IconButton onClick={() => iArrayHelpers.push(JSON.parse(JSON.stringify(emptyIngredient)))}>
-                <AddIcon />
-              </IconButton>
+              {formik.values.ingredientCategories[cIndex].ingredients.length < 20 && (
+                <IconButton onClick={() => iArrayHelpers.push(JSON.parse(JSON.stringify(emptyIngredient)))}>
+                  <AddIcon />
+                </IconButton>
+              )}
             </Grid>
             <Grid size={12}>
               {formik.values.ingredientCategories.length > 1 && (
@@ -113,6 +120,8 @@ export const IngredientCategoryForm = () => {
                           label="Category name"
                           name={`ingredientCategories[${cIndex}].name`}
                           fullWidth
+                          error={getIn(formik.errors, `ingredientCategories[${cIndex}].name`)}
+                          helperText={getIn(formik.errors, `ingredientCategories[${cIndex}].name`)}
                           value={formik.values.ingredientCategories[cIndex].name}
                           onChange={formik.handleChange}
                         />
@@ -125,12 +134,14 @@ export const IngredientCategoryForm = () => {
                   ))}
                 </Grid>
                 <Grid size={12}>
-                  <Button
-                    variant="contained"
-                    onClick={() => cArrayHelpers.push(JSON.parse(JSON.stringify(emptyIngredientCategory)))}
-                  >
-                    New category
-                  </Button>
+                  {formik.values.ingredientCategories.length < 10 && (
+                    <Button
+                      variant="contained"
+                      onClick={() => cArrayHelpers.push(JSON.parse(JSON.stringify(emptyIngredientCategory)))}
+                    >
+                      New category
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             )}
