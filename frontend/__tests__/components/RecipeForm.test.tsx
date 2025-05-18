@@ -197,7 +197,6 @@ describe('Recipe form', () => {
     await user.click(addIngredientButton)
 
     const newNameFields = screen.getAllByLabelText('Name')
-    screen.debug(addIngredientButton)
     expect(newNameFields.length).toEqual(3)
   })
 
@@ -217,7 +216,7 @@ describe('Recipe form', () => {
   })
 
   test('can have at most 10 steps', async () => {
-    const stepFields = screen.getAllByLabelText('Category name')
+    const stepFields = screen.getAllByLabelText('Step')
     expect(stepFields.length).toEqual(1)
     const addStepButton = screen.getByTestId('addStepButton')
     const user = userEvent.setup()
@@ -227,7 +226,7 @@ describe('Recipe form', () => {
     }
 
     expect(addStepButton).not.toBeVisible()
-    const newStepFields = screen.getAllByLabelText('Category name')
+    const newStepFields = screen.getAllByLabelText('Step')
     expect(newStepFields.length).toEqual(10)
   })
 })
