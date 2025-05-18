@@ -68,7 +68,7 @@ const IngredientForm = ({ cIndex, category, cArrayHelpers }: { cIndex: number, c
                       )}
                     </Grid>
                     {getIn(formik.errors, `ingredientCategories[${cIndex}].ingredients[${iIndex}].name`) && (
-                      <FormHelperText error>{getIn(formik.errors, `ingredientCategories[${cIndex}].ingredients[${iIndex}].name`)}</FormHelperText>
+                      <FormHelperText error data-testid="ingredientNameError">{getIn(formik.errors, `ingredientCategories[${cIndex}].ingredients[${iIndex}].name`)}</FormHelperText>
                     )}
                   </Grid>
                 </div>
@@ -76,7 +76,7 @@ const IngredientForm = ({ cIndex, category, cArrayHelpers }: { cIndex: number, c
             </Grid>
             <Grid size={12}>
               {formik.values.ingredientCategories[cIndex].ingredients.length < 20 && (
-                <IconButton onClick={() => iArrayHelpers.push(JSON.parse(JSON.stringify(emptyIngredient)))}>
+                <IconButton data-testid="addIngredientButton" onClick={() => iArrayHelpers.push(JSON.parse(JSON.stringify(emptyIngredient)))}>
                   <AddIcon />
                 </IconButton>
               )}

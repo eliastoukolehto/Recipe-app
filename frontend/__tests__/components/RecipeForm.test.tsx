@@ -68,7 +68,7 @@ describe('Recipe form', () => {
     await user.type(nameField, 'testrecipe name')
     await user.type(descriptionField, 'testrecipe description')
     await user.type(stepField, 'testrecipe step')
-    await user.type(categoryNameField, 'testrecipe categoryname')
+    await user.type(categoryNameField, 'categoryname')
     await user.type(ingredientAmountField, '{backspace}100')
     await user.type(ingredientNameField, 'testingredient')
     await user.type(ingredientUnitField, '{backspace}g')
@@ -91,7 +91,7 @@ describe('Recipe form', () => {
                 unit: 'g',
               },
             ],
-            name: 'testrecipe categoryname',
+            name: 'categoryname',
           },
         ],
         name: 'testrecipe name',
@@ -106,5 +106,128 @@ describe('Recipe form', () => {
         ],
       },
     )
+  })
+
+  test('shows correct errors with empty fields', async () => {
+    const nameField = screen.getAllByLabelText('Name')[0]
+    const stepField = screen.getByLabelText('Step')
+
+    const createButton = screen.getByRole('button', { name: 'Create' })
+    const user = userEvent.setup()
+
+    await user.click(createButton)
+
+    const servingError = screen.getByTestId('servingError')
+    const ingredientNameError = screen.getByTestId('ingredientNameError')
+
+    expect(nameField).toHaveAccessibleDescription('Name required')
+    expect(stepField).toHaveAccessibleDescription('Step can\'t be empty')
+    expect(servingError.textContent).toEqual('Servings must be more than 1')
+    expect(ingredientNameError.textContent).toEqual('Ingredients must have a name')
+  })
+
+  test('submits with servings removed', async () => {
+    const nameField = screen.getAllByLabelText('Name')[0]
+    const stepField = screen.getByLabelText('Step')
+    const ingredientNameField = screen.getAllByLabelText('Name')[1]
+    const removeServingButton = screen.getByRole('button', { name: 'Remove serving' })
+
+    const createButton = screen.getByRole('button', { name: 'Create' })
+    const user = userEvent.setup()
+
+    await user.type(nameField, 'testrecipe name')
+    await user.type(ingredientNameField, 'testingredient')
+    await user.type(stepField, 'testrecipe step')
+    await user.click(removeServingButton)
+
+    await user.click(createButton)
+
+    expect(variableMatcher).toHaveBeenCalledWith(
+      {
+        description: '',
+        ingredientCategories: [
+          {
+            ingredients: [
+              {
+                amount: 1,
+                name: 'testingredient',
+                unit: 'g',
+              },
+            ],
+            name: '',
+          },
+        ],
+        name: 'testrecipe name',
+        steps: [
+          'testrecipe step',
+        ],
+      },
+    )
+  })
+
+  test('has correct amount of fields', async () => {
+    const nameFields = screen.getAllByLabelText('Name')
+    expect(nameFields.length).toEqual(2)
+    const stepFields = screen.getAllByLabelText('Step')
+    expect(stepFields.length).toEqual(1)
+    const categoryNameFields = screen.getAllByLabelText('Category name')
+    expect(categoryNameFields.length).toEqual(1)
+  })
+
+  test('can have at most 20 ingredients', async () => {
+    const nameFields = screen.getAllByLabelText('Name')
+    expect(nameFields.length).toEqual(2)
+    const addIngredientButton = screen.getByTestId('addIngredientButton')
+    const user = userEvent.setup()
+
+    for (let i = 0; i < 25; i++) {
+      await user.click(addIngredientButton)
+    }
+    expect(addIngredientButton).not.toBeVisible()
+    const newNameFields = screen.getAllByLabelText('Name')
+    expect(newNameFields.length).toEqual(21)
+  })
+
+  test('can add more ingredients', async () => {
+    const nameFields = screen.getAllByLabelText('Name')
+    expect(nameFields.length).toEqual(2)
+    const addIngredientButton = screen.getByTestId('addIngredientButton')
+    const user = userEvent.setup()
+
+    await user.click(addIngredientButton)
+
+    const newNameFields = screen.getAllByLabelText('Name')
+    screen.debug(addIngredientButton)
+    expect(newNameFields.length).toEqual(3)
+  })
+
+  test('can have at most 10 categories', async () => {
+    const categoryFields = screen.getAllByLabelText('Category name')
+    expect(categoryFields.length).toEqual(1)
+    const addCategoryButton = screen.getByRole('button', { name: 'New category' })
+    const user = userEvent.setup()
+
+    for (let i = 0; i < 15; i++) {
+      await user.click(addCategoryButton)
+    }
+
+    expect(addCategoryButton).not.toBeVisible()
+    const newCategoryFields = screen.getAllByLabelText('Category name')
+    expect(newCategoryFields.length).toEqual(10)
+  })
+
+  test('can have at most 10 steps', async () => {
+    const stepFields = screen.getAllByLabelText('Category name')
+    expect(stepFields.length).toEqual(1)
+    const addStepButton = screen.getByTestId('addStepButton')
+    const user = userEvent.setup()
+
+    for (let i = 0; i < 15; i++) {
+      await user.click(addStepButton)
+    }
+
+    expect(addStepButton).not.toBeVisible()
+    const newStepFields = screen.getAllByLabelText('Category name')
+    expect(newStepFields.length).toEqual(10)
   })
 })

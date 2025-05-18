@@ -72,7 +72,7 @@ const RecipeForm = () => {
     steps: Yup.array().of(Yup.string().required('Step can\'t be empty').max(1000, 'Too long')).min(1, 'at least one step required'),
     serving: Yup.object({
       amount: Yup.number().required('Servings required').min(1, 'Servings must be more than 1').max(100, 'Servings must be less than 100'),
-      per: Yup.number().required('Per person required').min(1, 'Serving per person must be more than 1').max(1000, 'Serving per person must be less than 1000'),
+      per: Yup.number().required('Per person required').min(0, 'Serving per person must be more than 0').max(1000, 'Serving per person must be less than 1000'),
       unit: Yup.string().required('Unit required').max(10, 'Unit too long'),
     }).default(undefined).nullable(),
     prepareTime: Yup.number().nullable().transform((value, original) => ((original === '' || original === 0) ? undefined : value)).max(3000, 'Too large').min(0, 'Too small'),
@@ -156,7 +156,7 @@ const RecipeForm = () => {
                             </IconButton>
                           )}
                           {formik.values.steps.length < 10 && (
-                            <IconButton onClick={() => ArrayHelpers.push('')}>
+                            <IconButton data-testid="addStepButton" onClick={() => ArrayHelpers.push('')}>
                               <AddIcon />
                             </IconButton>
                           )}
@@ -206,7 +206,7 @@ const RecipeForm = () => {
                         />
                       </Grid>
                       {Boolean(formik.errors.serving) && (
-                        <FormHelperText error>
+                        <FormHelperText error data-testid="servingError">
                           {formik.errors.serving?.amount === undefined
                             ? (formik.errors.serving?.per === undefined
                                 ? formik.errors.serving?.unit
