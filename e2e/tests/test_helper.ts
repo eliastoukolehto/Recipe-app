@@ -23,7 +23,7 @@ const createRecipe = async (page: Page, name: string, description: string) => {
   await page.getByLabel('Description').fill(description)
   await page.getByLabel('Step').fill('Testrecipe Step')
   await page.getByLabel('Name', { exact: true }).nth(1).fill('TestIngredient')
-  await page.getByLabel('Unit').nth(1).fill('dl')
+  await page.getByRole('button', { name: 'Remove serving' }).click()
   await page.getByRole('button', { name: 'Create' }).click()
   await page.waitForURL('**/recipes/**')
   await page.getByRole('link', { name: /recipe-app/i }).click()

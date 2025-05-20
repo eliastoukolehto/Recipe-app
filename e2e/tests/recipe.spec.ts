@@ -21,7 +21,31 @@ test.describe('Recipe app recipe', () => {
     await page.getByLabel('Description').fill('Testrecipe Description')
     await page.getByLabel('Step').fill('Testrecipe Step')
     await page.getByLabel('Name', { exact: true }).nth(1).fill('TestIngredient')
-    await page.getByLabel('Unit').nth(1).fill('dl')
+    await page.getByRole('button', { name: 'Remove serving' }).click()
+    await page.getByRole('button', { name: 'Create' }).click()
+    await expect(page.getByText(/Adding recipe succeeded/i)).toBeVisible()
+  })
+
+  test('can be created with extended fields', async ({ page }) => {
+    await createUserAndLogin(page, 'TestUser', 'ValidPassword1')
+    await page.getByRole('link', { name: 'New Recipe' }).click()
+    await page.getByLabel('Name', { exact: true }).nth(0).fill('Testrecipe Name')
+    await page.getByLabel('Name', { exact: true }).nth(1).fill('Cat1Ing1')
+    await page.getByLabel('Step').fill('Step1')
+    await page.getByRole('button', { name: 'Remove serving' }).click()
+
+    await page.getByRole('button', { name: 'New category' }).click()
+    await page.getByTestId('addStepButton').click()
+    await page.getByTestId('addIngredientButton').nth(0).click()
+    await page.getByTestId('addIngredientButton').nth(0).click()
+    await page.getByTestId('addIngredientButton').nth(1).click()
+
+    await page.getByLabel('Name', { exact: true }).nth(2).fill('Cat1Ing2')
+    await page.getByLabel('Name', { exact: true }).nth(3).fill('Cat1Ing3')
+    await page.getByLabel('Name', { exact: true }).nth(4).fill('Cat2Ing1')
+    await page.getByLabel('Name', { exact: true }).nth(5).fill('Cat2Ing2')
+    await page.getByLabel('Step').nth(1).fill('Step2')
+
     await page.getByRole('button', { name: 'Create' }).click()
     await expect(page.getByText(/Adding recipe succeeded/i)).toBeVisible()
   })
