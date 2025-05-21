@@ -43,3 +43,14 @@ export const existingUserToken = async (httpServer: Server) => {
   }
   return `Bearer ${token}`
 }
+
+export const existingCustomUserToken = async (httpServer: Server, username: string, password: string) => {
+  const variables = { username, password }
+  await request(httpServer).post('/').send({ query: createUserQuery, variables })
+  const response = await request(httpServer).post('/').send({ query: loginQuery, variables })
+  const token = response.body.data.login?.value
+  if (!token) {
+    console.log('error with creating token:', JSON.stringify(response.body))
+  }
+  return `Bearer ${token}`
+}

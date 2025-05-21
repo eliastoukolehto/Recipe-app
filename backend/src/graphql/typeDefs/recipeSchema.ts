@@ -58,6 +58,7 @@ const recipeTypeDefs = /* GraphQL */`
       serving: ServingInput
       prepareTime: Int
     ): Recipe
+    deleteRecipe(id: ID!): Boolean
   }
 `
 
