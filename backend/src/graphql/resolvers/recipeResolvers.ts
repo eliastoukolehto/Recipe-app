@@ -51,5 +51,26 @@ export const recipeResolvers = {
         })
       }
     },
+    deleteRecipe: async (_root: unknown, { id }: { id: number }, { currentUser }: { currentUser: Promise<SafeUser | null> }) => {
+      const user = await currentUser
+      const recipe = await Recipe.findByPk(id, { include: { model: User } })
+      if (!recipe || user?.id != recipe.userId) {
+        throw new GraphQLError('Unauthorized', { extensions: {
+          code: 'BAD_USER_INPUT',
+        } })
+      }
+      try {
+        recipe.destroy()
+        return true
+      }
+      catch (error) {
+        throw new GraphQLError('Deleting recipe failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            error,
+          },
+        })
+      }
+    },
   },
 }

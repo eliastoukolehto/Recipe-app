@@ -25,7 +25,7 @@ const UserMenu = () => {
   if (!user) return null
   return (
     <>
-      <IconButton onClick={handleOpen}>
+      <IconButton onClick={handleOpen} aria-label="userMenuButton">
         <Avatar sx={{ bgcolor: 'primary.dark' }}>{user.username[0]}</Avatar>
       </IconButton>
       <Menu
