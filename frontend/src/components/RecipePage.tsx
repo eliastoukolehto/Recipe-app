@@ -117,7 +117,7 @@ const InteractionBar = ({ recipe }: { recipe: Recipe }) => {
     handleDialogClose()
     try {
       await deleteRecipe({ variables: { id: recipe.id } })
-      dispatch(notify({ severity: 'success', message: `Deleting recipe succeeded` }))
+      dispatch(notify({ severity: 'success', message: `Recipe deleted successfully` }))
       navigate(`/`)
     }
     catch {

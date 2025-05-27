@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { backendURL, createRecipe, createUserAndLogin, frontendURL } from './test_helper'
+import { backendURL, createRecipe, createUserAndLogin, frontendURL, logout } from './test_helper'
 
 test.describe('Recipe app recipe', () => {
   test.beforeEach(async ({ page, request }) => {
@@ -65,5 +65,25 @@ test.describe('Recipe app recipe', () => {
     await page.getByRole('link', { name: /view/i }).click()
     await expect(page.getByText(/TestRecipe/i).nth(0)).toBeVisible()
     await expect(page.getByText(/TestDescription/i)).toBeVisible()
+  })
+
+  test('can be deleted by owner', async ({ page }) => {
+    await createUserAndLogin(page, 'TestUser', 'ValidPassword1')
+    await createRecipe(page, 'TestRecipe', 'TestDescription')
+    await page.getByRole('link', { name: /view/i }).click()
+    await page.getByLabel('editButton').click()
+    await page.getByText('Delete').click()
+    await page.getByRole('button', { name: 'Yes' }).click()
+    await expect(page.getByText(/Recipe deleted successfully/i)).toBeVisible()
+    expect(page.getByText(/no recipes found/i)).toBeDefined()
+  })
+
+  test('cannot be deleted by other users', async ({ page }) => {
+    await createUserAndLogin(page, 'TestUser', 'ValidPassword1')
+    await createRecipe(page, 'TestRecipe', 'TestDescription')
+    await logout(page)
+    await createUserAndLogin(page, 'TestUser2', 'ValidPassword2')
+    await page.getByRole('link', { name: /view/i }).click()
+    await expect(page.getByLabel('editButton')).not.toBeVisible()
   })
 })

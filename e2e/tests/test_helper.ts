@@ -29,7 +29,12 @@ const createRecipe = async (page: Page, name: string, description: string) => {
   await page.getByRole('link', { name: /recipe-app/i }).click()
 }
 
+const logout = async (page: Page) => {
+  await page.getByLabel('userMenuButton').click()
+  await page.getByText(/logout/i).click()
+}
+
 const backendURL = 'http://localhost:4000'
 const frontendURL = 'http://localhost:5173'
 
-export { createUser, createUserAndLogin, createRecipe, backendURL, frontendURL }
+export { createUser, createUserAndLogin, createRecipe, logout, backendURL, frontendURL }

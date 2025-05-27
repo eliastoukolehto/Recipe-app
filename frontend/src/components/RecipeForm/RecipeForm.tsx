@@ -41,7 +41,7 @@ const RecipeForm = () => {
       const values = validationSchema.cast(inputs)
       const { data } = await addRecipe({ variables: values })
       const recipeId = data.createRecipe.id
-      dispatch(notify({ severity: 'success', message: `Adding recipe succeeded` }))
+      dispatch(notify({ severity: 'success', message: `Recipe added succesfully` }))
       navigate(`/recipes/${recipeId}`)
     }
     catch {
