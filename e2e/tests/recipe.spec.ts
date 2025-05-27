@@ -23,7 +23,7 @@ test.describe('Recipe app recipe', () => {
     await page.getByLabel('Name', { exact: true }).nth(1).fill('TestIngredient')
     await page.getByRole('button', { name: 'Remove serving' }).click()
     await page.getByRole('button', { name: 'Create' }).click()
-    await expect(page.getByText(/Adding recipe succeeded/i)).toBeVisible()
+    await expect(page.getByText(/Recipe added succesfully/i)).toBeVisible()
   })
 
   test('can be created with extended fields', async ({ page }) => {
@@ -47,7 +47,7 @@ test.describe('Recipe app recipe', () => {
     await page.getByLabel('Step').nth(1).fill('Step2')
 
     await page.getByRole('button', { name: 'Create' }).click()
-    await expect(page.getByText(/Adding recipe succeeded/i)).toBeVisible()
+    await expect(page.getByText(/Recipe added succesfully/i)).toBeVisible()
   })
 
   test('appears on frontpage after creation', async ({ page }) => {
