@@ -54,6 +54,10 @@ const deleteRecipQuery = /* GraphQL */`
   mutation deleteRecipe( $id: ID! ) { deleteRecipe ( id: $id ) }
 `
 
+const recipesQuery = /* GraphQL */`
+  query recipes( $search: String ) { recipes ( page: 0, search: $search ) { count rows { name } } }
+`
+
 const testVariables = {
   name: 'breakfast porridge in the microwave',
   ingredientCategories: [{
@@ -271,6 +275,55 @@ describe('recipeResolver tests', () => {
 
       expect(response2.body.errors[0].extensions.code).toBe('BAD_USER_INPUT')
       expect(response2.body.data.deleteRecipe).not.toBe(true)
+    })
+  })
+
+  describe('searching recipes', () => {
+    beforeEach(async () => {
+      await request(httpServer).post('/').send({ query: resetQuery })
+      token = await existingUserToken(httpServer)
+    })
+
+    test('succeeds with exact search', async () => {
+      const variables = testVariables
+      await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const response = await request(httpServer)
+        .post('/')
+        .send({ query: recipesQuery, variables: { search: 'breakfast porridge in the microwave' } })
+
+      expect(response.body.data.recipes.rows).toHaveLength(1)
+    })
+
+    test('succeeds with partial search', async () => {
+      const variables = testVariables
+      await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const response = await request(httpServer)
+        .post('/')
+        .send({ query: recipesQuery, variables: { search: 'PORRIDGE' } })
+
+      expect(response.body.data.recipes.rows).toHaveLength(1)
+    })
+
+    test('fails with invalid search', async () => {
+      const variables = testVariables
+      await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const response = await request(httpServer)
+        .post('/')
+        .send({ query: recipesQuery, variables: { search: 'macaroni and cheese' } })
+
+      expect(response.body.data.recipes.rows).toHaveLength(0)
     })
   })
 })
