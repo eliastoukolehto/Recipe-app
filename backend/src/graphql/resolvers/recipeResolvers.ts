@@ -2,18 +2,29 @@ import { GraphQLError } from 'graphql'
 import { Recipe, User } from '../../models'
 import { toNewRecipe } from '../../utils/recipeValidators'
 import { SafeUser } from '../../types/userTypes'
+import { Op } from 'sequelize'
 
 export const recipeResolvers = {
   Query: {
-    recipes: async (_root: unknown, { page }: { page: number }) => {
+    recipes: async (_root: unknown, { page, search }: { page: number, search: string }) => {
       const limit = 12
       const offset = page * limit
+      let nameFilter = { }
+
+      if (search) {
+        nameFilter = { name: {
+          [Op.iLike]: `%${search.trim()}%`,
+        },
+        }
+      }
 
       const recipes = await Recipe.findAndCountAll({
         include: { model: User },
         limit: limit,
         offset: offset,
+        where: { ...nameFilter },
       })
+
       return recipes
     },
     recipe: async (_root: unknown, { id }: { id: number }) => {

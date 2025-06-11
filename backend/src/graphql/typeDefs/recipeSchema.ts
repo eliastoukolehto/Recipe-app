@@ -44,6 +44,7 @@ const recipeTypeDefs = /* GraphQL */`
   extend type Query {
     recipes(
       page: Int!
+      search: String
     ): RecipeListPage
     recipe(
       id: ID!

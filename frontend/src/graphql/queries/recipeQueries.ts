@@ -64,9 +64,11 @@ export const GET_RECIPE = gql`
 export const GET_RECIPES = gql`
   query recipes (
     $page: Int!
+    $search: String
   ) {
     recipes (
       page: $page
+      search: $search
     ) {
     count
     rows {

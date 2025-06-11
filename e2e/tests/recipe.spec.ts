@@ -86,4 +86,20 @@ test.describe('Recipe app recipe', () => {
     await page.getByRole('link', { name: /view/i }).click()
     await expect(page.getByLabel('editButton')).not.toBeVisible()
   })
+
+  test('is found with correct search', async ({ page }) => {
+    await createUserAndLogin(page, 'TestUser', 'ValidPassword1')
+    await createRecipe(page, 'TestRecipe', 'TestDescription')
+    await page.getByLabel('Search').fill('TestRecipe')
+    await page.keyboard.press('Enter')
+    await expect(page.getByText(/view/i)).toBeVisible()
+  })
+
+  test('is not found with incorrect search', async ({ page }) => {
+    await createUserAndLogin(page, 'TestUser', 'ValidPassword1')
+    await createRecipe(page, 'TestRecipe', 'TestDescription')
+    await page.getByLabel('Search').fill('not_valid')
+    await page.keyboard.press('Enter')
+    await expect(page.getByText(/view/i)).not.toBeVisible()
+  })
 })
