@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { GET_RECIPES } from '../graphql/queries/recipeQueries'
 import { Box, IconButton, InputAdornment, Pagination, TextField, Typography } from '@mui/material'
 import { RecipeListItem } from '../types/recipe'
@@ -13,6 +13,10 @@ const Home = () => {
   const recipes = result?.recipes.rows as RecipeListItem[]
   const count = result?.recipes.count as number
   const perPage = 12 // hardcoded in backend
+
+  useEffect(() => {
+    refetch()
+  }, [])
 
   const handleSearch = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
