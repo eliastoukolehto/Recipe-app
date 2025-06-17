@@ -1,4 +1,4 @@
-import { existingCustomUserToken, existingUserToken, resetQuery } from './testHelper'
+import { existingCustomUserToken, existingUserToken, resetQuery, superuserToken } from './testHelper'
 import db from '../src/utils/db'
 import request from 'supertest'
 import { Server } from 'http'
@@ -275,6 +275,26 @@ describe('recipeResolver tests', () => {
 
       expect(response2.body.errors[0].extensions.code).toBe('BAD_USER_INPUT')
       expect(response2.body.data.deleteRecipe).not.toBe(true)
+    })
+
+    test('succeeds with superuser', async () => {
+      const variables = testVariables
+      const superToken = await superuserToken(httpServer)
+
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: deleteRecipQuery, variables: { id: recipeId } })
+        .set({ Authorization: superToken })
+
+      expect(response2.body.errors).toBeUndefined()
+      expect(response2.body.data.deleteRecipe).toBe(true)
     })
   })
 

@@ -1,5 +1,6 @@
 import request from 'supertest'
 import { Server } from 'http'
+import { getEnv } from '../src/utils/config'
 
 export const createUserQuery = /* GraphQL */`
   mutation createUser(
@@ -51,6 +52,16 @@ export const existingCustomUserToken = async (httpServer: Server, username: stri
   const token = response.body.data.login?.value
   if (!token) {
     console.log('error with creating token:', JSON.stringify(response.body))
+  }
+  return `Bearer ${token}`
+}
+
+export const superuserToken = async (httpServer: Server) => {
+  const variables = { username: getEnv('ADMIN_USERNAME'), password: getEnv('ADMIN_PASSWORD') }
+  const response = await request(httpServer).post('/').send({ query: loginQuery, variables })
+  const token = response.body.data.login?.value
+  if (!token) {
+    console.log('error fetching superuser token:', JSON.stringify(response.body))
   }
   return `Bearer ${token}`
 }

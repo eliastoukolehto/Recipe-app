@@ -8,5 +8,5 @@ export const getCurrentUser = async (req: Request | null): Promise<SafeUser | nu
   if (!decodedToken) return null
   const currentUser = await User.findByPk(decodedToken.id)
   if (!currentUser) return null
-  return { id: currentUser.id, username: currentUser.username }
+  return { id: currentUser.id, username: currentUser.username, role: currentUser.role }
 }

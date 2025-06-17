@@ -29,6 +29,7 @@ export const userResolvers = {
       const tokenArgs = {
         username: user.username,
         id: user.id,
+        role: user.role,
       }
       const SECRET = getEnv('SECRET')
       const encryptedUser = jwt.sign(tokenArgs, SECRET)
@@ -49,6 +50,7 @@ export const userResolvers = {
         const user = await User.create({
           username: username,
           password: passwordHash,
+          role: 0,
         })
         return user
       }
