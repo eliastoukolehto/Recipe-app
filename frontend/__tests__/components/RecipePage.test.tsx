@@ -7,7 +7,7 @@ import RecipePage from '../../src/components/RecipePage'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-const testUserData = { username: 'TestUser', id: '1' }
+const testUserData = { username: 'TestUser', id: '1', role: 0 }
 
 const testRecipeData = {
   recipe: {
@@ -81,13 +81,30 @@ describe('Recipe page', () => {
   describe('With different user', () => {
     beforeEach(() => {
       const store = setupStore()
-      store.dispatch(setUser({ username: 'TestUser2', id: '2' }))
+      store.dispatch(setUser({ username: 'TestUser2', id: '2', role: 0 }))
       renderWithProviders(<RecipePage />, { store }, [deleteRecipeMock, getRecipeMock])
     })
     test('Cannot be deleted', async () => {
       await screen.findByText('testrecipe')
 
       expect(screen.queryByLabelText('editButton')).toBeNull()
+    })
+  })
+  describe('With different superuser', () => {
+    beforeEach(() => {
+      const store = setupStore()
+      store.dispatch(setUser({ username: 'adminUser', id: '3', role: 1 }))
+      renderWithProviders(<RecipePage />, { store }, [deleteRecipeMock, getRecipeMock])
+    })
+    test('Can be deleted', async () => {
+      await screen.findByText('testrecipe')
+      const user = userEvent.setup()
+
+      await user.click(screen.getByLabelText('editButton'))
+      await user.click(screen.getByText('Delete'))
+      await user.click(screen.getByRole('button', { name: 'Yes' }))
+
+      expect(variableMatcher).toHaveBeenCalledWith({ id: '123' })
     })
   })
 })

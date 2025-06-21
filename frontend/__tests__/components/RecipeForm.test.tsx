@@ -7,7 +7,7 @@ import { vi } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-const testUserData = { username: 'TestUser', id: '1' }
+const testUserData = { username: 'TestUser', id: '1', role: 0 }
 
 const variableMatcher = vi.fn().mockReturnValue(true)
 

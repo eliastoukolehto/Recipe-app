@@ -12,6 +12,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>
   declare username: string
   declare password: string
+  declare role: number
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare recipes?: NonAttribute<Recipe[]>
@@ -34,6 +35,10 @@ User.init({
   },
   password: {
     type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  role: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   createdAt: DataTypes.DATE,
