@@ -153,7 +153,7 @@ const InteractionBar = ({ recipe }: { recipe: Recipe }) => {
             </Typography>
           )}
         </Stack>
-        {user && user.id === recipe.user.id && (
+        {user && (user.id === recipe.user.id || user.role === 1) && (
           <span>
             <IconButton color="primary" sx={{ justifySelf: 'right' }} onClick={handleOpen} aria-label="editButton">
               <EditIcon />
