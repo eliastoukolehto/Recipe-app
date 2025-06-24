@@ -8,6 +8,9 @@ const recipeTypeDefs = /* GraphQL */`
     serving: Serving
     prepareTime: Int
     user: User!
+    totalLikes: Int
+    likedByCurrentUser: Boolean!
+    likedBy: [User]
   }
   type IngredientCategory {
     name: String

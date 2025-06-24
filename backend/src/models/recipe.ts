@@ -2,10 +2,12 @@ import {
   Model, DataTypes, InferAttributes, InferCreationAttributes,
   CreationOptional,
   ForeignKey,
+  NonAttribute,
 } from 'sequelize'
 import db from '../utils/db'
 import { IngredientCategory, Serving } from '../types/recipeTypes'
 import User from './user'
+import RecipeLike from './recipeLike'
 
 const sequelize = db.sequelize
 
@@ -20,6 +22,9 @@ class Recipe extends Model<InferAttributes<Recipe>, InferCreationAttributes<Reci
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare userId: ForeignKey<User['id']>
+  declare likedByCurrentUser?: ForeignKey<RecipeLike['userId']>
+  declare totalLikes?: number
+  declare likedBy?: NonAttribute<User[]>
 }
 
 Recipe.init({
@@ -51,6 +56,7 @@ Recipe.init({
   },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
+  totalLikes: DataTypes.NUMBER,
 }, {
   sequelize,
   underscored: true,

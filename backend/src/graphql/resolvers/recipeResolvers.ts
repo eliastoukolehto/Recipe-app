@@ -1,31 +1,61 @@
 import { GraphQLError } from 'graphql'
-import { Recipe, User } from '../../models'
+import { Recipe, RecipeLike, User } from '../../models'
 import { toNewRecipe } from '../../utils/recipeValidators'
 import { SafeUser } from '../../types/userTypes'
-import { Op } from 'sequelize'
+import { Includeable, Op } from 'sequelize'
 
 export const recipeResolvers = {
   Query: {
-    recipes: async (_root: unknown, { page, search }: { page: number, search: string }) => {
+    recipes: async (_root: unknown, { page, search, currentUser }: { page: number, search: string, currentUser: SafeUser | null }) => {
       const limit = 12
       const offset = page * limit
-      let nameFilter = { }
 
-      if (search) {
-        nameFilter = { name: {
-          [Op.iLike]: `%${search.trim()}%`,
-        },
+      const parseFilter = (search: string) => {
+        if (search) {
+          return { name: {
+            [Op.iLike]: `%${search.trim()}%`,
+          },
+          }
         }
+        return {}
       }
 
-      const recipes = await Recipe.findAndCountAll({
-        include: { model: User },
+      // if currentUser exists, include which recipes user has liked
+      const parseInclude = (currentUser: SafeUser | null) => {
+        const include = [{ model: User }] as Includeable[]
+        if (currentUser) {
+          include.concat([{
+            model: RecipeLike,
+            as: 'likedByCurrentUser',
+            attributes: ['userId'],
+            required: false,
+            where: {
+              user_id: currentUser.id,
+            },
+          }])
+        }
+        return include
+      }
+
+      const filter = parseFilter(search)
+      const include = parseInclude(currentUser)
+
+      const result = await Recipe.findAndCountAll({
+        include: include,
         limit: limit,
         offset: offset,
-        where: { ...nameFilter },
+        where: filter,
+        raw: true,
       })
 
-      return recipes
+      // Convert likedByCurrentUser to boolean
+      const recipes = result.rows.map((recipe) => {
+        const likedByCurrentUser = recipe.likedByCurrentUser != undefined
+
+        return { ...recipe, likedByCurrentUser: likedByCurrentUser }
+      })
+
+      return { count: result.count, rows: recipes }
     },
     recipe: async (_root: unknown, { id }: { id: number }) => {
       const recipe = await Recipe.findByPk(id, { include: { model: User } })
