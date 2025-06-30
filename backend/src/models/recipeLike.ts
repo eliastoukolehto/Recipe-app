@@ -16,11 +16,19 @@ class RecipeLike extends Model<InferAttributes<RecipeLike>, InferCreationAttribu
 }
 
 RecipeLike.init({
+  recipeId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+  },
   createdAt: DataTypes.DATE,
 }, {
   sequelize,
   underscored: true,
-  timestamps: true,
+  updatedAt: false,
   modelName: 'recipeLike',
 })
 

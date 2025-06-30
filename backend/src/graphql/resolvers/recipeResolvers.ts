@@ -1,14 +1,32 @@
 import { GraphQLError } from 'graphql'
-import { Recipe, RecipeLike, User } from '../../models'
+import { Recipe, RecipeLike, User } from '../../models/index'
 import { toNewRecipe } from '../../utils/recipeValidators'
 import { SafeUser } from '../../types/userTypes'
 import { Includeable, Op } from 'sequelize'
+import { ParsedRecipe, QueriedRecipe } from '../../types/recipeTypes'
+
+// if user is logged in, include which recipes have been liked
+const parseInclude = (user: SafeUser | null) => {
+  const initialInclude = [{ model: User, attributes: ['id', 'username', 'role'] }] as Includeable[]
+  if (!user) return initialInclude
+  const ifUserInclude = {
+    model: User,
+    as: 'likedBy',
+    attributes: ['id'],
+    required: false,
+    where: {
+      id: user.id,
+    },
+  } as Includeable
+  return [...initialInclude, ifUserInclude]
+}
 
 export const recipeResolvers = {
   Query: {
-    recipes: async (_root: unknown, { page, search, currentUser }: { page: number, search: string, currentUser: SafeUser | null }) => {
+    recipes: async (_root: unknown, { page, search }: { page: number, search: string }, { currentUser }: { currentUser: Promise<SafeUser | null> }) => {
       const limit = 12
       const offset = page * limit
+      const user = await currentUser
 
       const parseFilter = (search: string) => {
         if (search) {
@@ -20,51 +38,43 @@ export const recipeResolvers = {
         return {}
       }
 
-      // if currentUser exists, include which recipes user has liked
-      const parseInclude = (currentUser: SafeUser | null) => {
-        const include = [{ model: User }] as Includeable[]
-        if (currentUser) {
-          include.concat([{
-            model: RecipeLike,
-            as: 'likedByCurrentUser',
-            attributes: ['userId'],
-            required: false,
-            where: {
-              user_id: currentUser.id,
-            },
-          }])
-        }
-        return include
-      }
-
       const filter = parseFilter(search)
-      const include = parseInclude(currentUser)
+      const include = parseInclude(user)
 
       const result = await Recipe.findAndCountAll({
         include: include,
         limit: limit,
         offset: offset,
         where: filter,
-        raw: true,
       })
 
       // Convert likedByCurrentUser to boolean
       const recipes = result.rows.map((recipe) => {
-        const likedByCurrentUser = recipe.likedByCurrentUser != undefined
+        const plainRecipe = recipe.get({ plain: true }) as unknown as QueriedRecipe
+        const likedByCurrentUser = plainRecipe.likedBy != undefined && plainRecipe.likedBy.length > 0
 
-        return { ...recipe, likedByCurrentUser: likedByCurrentUser }
-      })
+        return { ...plainRecipe, likedByCurrentUser, likedBy: undefined }
+      }) as ParsedRecipe[]
 
       return { count: result.count, rows: recipes }
     },
-    recipe: async (_root: unknown, { id }: { id: number }) => {
-      const recipe = await Recipe.findByPk(id, { include: { model: User } })
-      if (!recipe) {
+    recipe: async (_root: unknown, { id }: { id: number }, { currentUser }: { currentUser: Promise<SafeUser | null> }) => {
+      const user = await currentUser
+      const include = parseInclude(user)
+      const result = await Recipe.findByPk(id, { include: include, plain: true })
+
+      if (!result) {
         throw new GraphQLError('Recipe not found', {
           extensions: {
             code: 'BAD_USER_INPUT',
           },
         })
+      }
+      // Convert likedByCurrentUser to boolean
+      const plainResult = result.get({ plain: true }) as unknown as QueriedRecipe
+      const recipe: ParsedRecipe = {
+        ...plainResult,
+        likedByCurrentUser: plainResult.likedBy != undefined && plainResult.likedBy.length > 0,
       }
       return recipe
     },
@@ -106,6 +116,29 @@ export const recipeResolvers = {
       }
       catch (error) {
         throw new GraphQLError('Deleting recipe failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            error,
+          },
+        })
+      }
+    },
+    likeRecipe: async (_root: unknown, { id }: { id: number }, { currentUser }: { currentUser: Promise<SafeUser | null> }) => {
+      const user = await currentUser
+
+      // Check if recipe is valid to like
+      const recipe = await Recipe.findByPk(id)
+      if (!recipe || !user) {
+        throw new GraphQLError('Liking recipe failed', { extensions: {
+          code: 'BAD_USER_INPUT',
+        } })
+      }
+      try {
+        const addedLike = await RecipeLike.create({ recipeId: id, userId: user.id })
+        return addedLike
+      }
+      catch (error) {
+        throw new GraphQLError('Liking recipe failed', {
           extensions: {
             code: 'BAD_USER_INPUT',
             error,

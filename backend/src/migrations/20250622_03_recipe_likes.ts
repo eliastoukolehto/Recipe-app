@@ -29,7 +29,7 @@ export const up: Migration = async ({ context: queryInterface }) => {
     BEGIN
       UPDATE recipes
       SET total_likes = total_likes + 1
-      WHERE id = NEW.post_id;
+      WHERE id = NEW.recipe_id;
       RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
@@ -48,7 +48,7 @@ export const up: Migration = async ({ context: queryInterface }) => {
     BEGIN
       UPDATE recipes
       SET total_likes = total_likes - 1
-      WHERE id = OLD.post_id;
+      WHERE id = OLD.recipe_id;
       RETURN OLD;
     END;
     $$ LANGUAGE plpgsql;

@@ -1,3 +1,5 @@
+import { SafeUser } from './userTypes'
+
 interface Ingredient {
   amount?: number
   unit?: string
@@ -22,4 +24,15 @@ export interface NewRecipe {
   steps: string[]
   serving?: Serving
   prepareTime?: number
+}
+
+export interface ParsedRecipe extends NewRecipe {
+  id: number
+  user: SafeUser
+  totalLikes: number
+  likedByCurrentUser: boolean
+}
+
+export type QueriedRecipe = Omit<ParsedRecipe, 'likedByCurrentUser'> & {
+  likedBy?: SafeUser[]
 }
