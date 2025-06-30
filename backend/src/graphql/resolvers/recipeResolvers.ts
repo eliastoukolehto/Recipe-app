@@ -146,5 +146,33 @@ export const recipeResolvers = {
         })
       }
     },
+    removeRecipeLike: async (_root: unknown, { id }: { id: number }, { currentUser }: { currentUser: Promise<SafeUser | null> }) => {
+      const user = await currentUser
+      if (!user) {
+        throw new GraphQLError('Removing like failed', { extensions: {
+          code: 'BAD_USER_INPUT',
+        } })
+      }
+
+      // check if like exists
+      const like = await RecipeLike.findOne({ where: { userId: user.id, recipeId: id } })
+      if (!like) {
+        throw new GraphQLError('Like not found', { extensions: {
+          code: 'BAD_USER_INPUT',
+        } })
+      }
+      try {
+        like.destroy()
+        return true
+      }
+      catch (error) {
+        throw new GraphQLError('Removing like failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            error,
+          },
+        })
+      }
+    },
   },
 }

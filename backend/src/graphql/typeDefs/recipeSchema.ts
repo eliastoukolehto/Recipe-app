@@ -67,6 +67,7 @@ const recipeTypeDefs = /* GraphQL */`
     ): Recipe
     deleteRecipe(id: ID!): Boolean
     likeRecipe(id: ID!): RecipeLike
+    removeRecipeLike(id: ID!): Boolean
   }
 `
 
