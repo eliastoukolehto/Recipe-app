@@ -1,8 +1,7 @@
-import { existingCustomUserToken, existingUserToken, resetQuery, superuserToken } from './testHelper'
+import { existingCustomUserToken, existingUserToken, resetQuery, superuserToken, testServer } from './testHelper'
 import db from '../src/utils/db'
 import request from 'supertest'
 import { Server } from 'http'
-import makeServer from '../app'
 
 let httpServer: Server
 let token: string
@@ -27,6 +26,8 @@ const createRecipeQuery = /* GraphQL */`
     id
     name
     description
+    totalLikes
+    likedByCurrentUser
     ingredientCategories {
       name
       ingredients {
@@ -50,12 +51,24 @@ const createRecipeQuery = /* GraphQL */`
 }
 `
 
+const recipeLikesQuery = /* GraphQL */`
+  query recipe( $id: ID! ) { recipe ( id: $id ) { totalLikes likedByCurrentUser } }
+`
+
 const deleteRecipQuery = /* GraphQL */`
   mutation deleteRecipe( $id: ID! ) { deleteRecipe ( id: $id ) }
 `
 
 const recipesQuery = /* GraphQL */`
   query recipes( $search: String ) { recipes ( page: 0, search: $search ) { count rows { name } } }
+`
+
+const likeRecipeQuery = /* GraphQL */`
+  mutation likeRecipe( $id: ID! ) { likeRecipe ( id: $id ) { recipeId, userId }}
+`
+
+const removeRecipeLikeQuery = /* GraphQL */`
+  mutation removeRecipeLike( $id: ID! ) { removeRecipeLike ( id: $id ) }
 `
 
 const testVariables = {
@@ -109,7 +122,7 @@ const testVariablesFull = {
 describe('recipeResolver tests', () => {
   beforeAll(async () => {
     await db.connectToDatabase()
-    httpServer = await makeServer()
+    httpServer = await testServer
     await request(httpServer).post('/').send({ query: resetQuery })
   })
 
@@ -153,6 +166,8 @@ describe('recipeResolver tests', () => {
       expect(data.steps).toEqual(testVariablesFull.steps)
       expect(data.user.id).not.toBeNull()
       expect(data.user.username).not.toBeNull()
+      expect(data.totalLikes).toEqual(0)
+      expect(data.likedByCurrentUser).toEqual(false)
     })
 
     test('succeeds with only necessary fields', async () => {
@@ -344,6 +359,230 @@ describe('recipeResolver tests', () => {
         .send({ query: recipesQuery, variables: { search: 'macaroni and cheese' } })
 
       expect(response.body.data.recipes.rows).toHaveLength(0)
+    })
+  })
+  describe('liking recipe', () => {
+    beforeEach(async () => {
+      await request(httpServer).post('/').send({ query: resetQuery })
+      token = await existingUserToken(httpServer)
+    })
+    test('succeeds with existing recipe', async () => {
+      const variables = testVariables
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token })
+
+      expect(response2.body.errors).toBeUndefined()
+      expect(response2.body.data.likeRecipe.recipeId).toBe(recipeId)
+    })
+    test('fails without auth token', async () => {
+      const variables = testVariables
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+
+      expect(response2.body.errors[0].extensions.code).toBe('BAD_USER_INPUT')
+    })
+    test('fails with invalid id', async () => {
+      const variables = testVariables
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id as number
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId + 1 } })
+        .set({ Authorization: token })
+
+      expect(response2.body.errors[0].extensions.code).toBe('BAD_USER_INPUT')
+    })
+    test('succeeds with different user', async () => {
+      const variables = testVariables
+      const token2 = await existingCustomUserToken(httpServer, 'TestUser2', 'Password1')
+
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token2 })
+
+      expect(response2.body.data.likeRecipe.recipeId).toBe(recipeId)
+    })
+    test('shows correctly with multiple likes', async () => {
+      const variables = testVariables
+      const token2 = await existingCustomUserToken(httpServer, 'TestUser2', 'Password1')
+
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id
+
+      await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token2 })
+
+      await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token2 })
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: recipeLikesQuery, variables: { id: recipeId } })
+        .set({ Authorization: token2 })
+
+      expect(response2.body.data.recipe.totalLikes).toEqual(2)
+      expect(response2.body.data.recipe.likedByCurrentUser).toEqual(true)
+    })
+    test('is not liked by currentUser if liked by others', async () => {
+      const variables = testVariables
+      const token2 = await existingCustomUserToken(httpServer, 'TestUser2', 'Password1')
+
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id
+
+      await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token })
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: recipeLikesQuery, variables: { id: recipeId } })
+        .set({ Authorization: token2 })
+
+      expect(response2.body.data.recipe.totalLikes).toEqual(1)
+      expect(response2.body.data.recipe.likedByCurrentUser).toEqual(false)
+    })
+    test('is not liked by currentUser if not logged in', async () => {
+      const variables = testVariables
+      const token2 = await existingCustomUserToken(httpServer, 'TestUser2', 'Password1')
+
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id
+
+      await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token2 })
+
+      await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token2 })
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: recipeLikesQuery, variables: { id: recipeId } })
+
+      expect(response2.body.data.recipe.totalLikes).toEqual(2)
+      expect(response2.body.data.recipe.likedByCurrentUser).toEqual(false)
+    })
+  })
+  describe('removing recipe like', () => {
+    beforeEach(async () => {
+      await request(httpServer).post('/').send({ query: resetQuery })
+      token = await existingUserToken(httpServer)
+    })
+    test('succeeds when like exists', async () => {
+      const variables = testVariables
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id
+
+      await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token })
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: removeRecipeLikeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token })
+
+      expect(response2.body.errors).toBeUndefined()
+      expect(response2.body.data.removeRecipeLike).toEqual(true)
+    })
+    test('fails without auth token', async () => {
+      const variables = testVariables
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id
+
+      await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token })
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: removeRecipeLikeQuery, variables: { id: recipeId } })
+
+      expect(response2.body.errors[0].message).toBe('Unauthorized')
+      expect(response2.body.data.removeRecipeLike).not.toEqual(true)
+    })
+    test('fails with invalid id', async () => {
+      const variables = testVariables
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id as number
+
+      await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token })
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: removeRecipeLikeQuery, variables: { id: recipeId + 1 } })
+        .set({ Authorization: token })
+
+      expect(response2.body.errors[0].message).toBe('Like not found')
+      expect(response2.body.data.removeRecipeLike).not.toEqual(true)
     })
   })
 })

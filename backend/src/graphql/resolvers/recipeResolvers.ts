@@ -91,7 +91,13 @@ export const recipeResolvers = {
         const newRecipe = toNewRecipe(args)
         const addedRecipe = await Recipe.create({ ...newRecipe, userId: user.id })
         await addedRecipe.reload({ include: { model: User } })
-        return addedRecipe
+        // new recipe has not been liked by anyone
+        const plainResult = addedRecipe.get({ plain: true }) as unknown as QueriedRecipe
+        const recipe: ParsedRecipe = {
+          ...plainResult,
+          likedByCurrentUser: false,
+        }
+        return recipe
       }
       catch (error) {
         throw new GraphQLError('Creating recipe failed', {
@@ -148,8 +154,8 @@ export const recipeResolvers = {
     },
     removeRecipeLike: async (_root: unknown, { id }: { id: number }, { currentUser }: { currentUser: Promise<SafeUser | null> }) => {
       const user = await currentUser
-      if (!user) {
-        throw new GraphQLError('Removing like failed', { extensions: {
+      if (user === null) {
+        throw new GraphQLError('Unauthorized', { extensions: {
           code: 'BAD_USER_INPUT',
         } })
       }

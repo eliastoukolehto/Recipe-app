@@ -1,6 +1,7 @@
 import request from 'supertest'
 import { Server } from 'http'
 import { getEnv } from '../src/utils/config'
+import makeServer from '../app'
 
 export const createUserQuery = /* GraphQL */`
   mutation createUser(
@@ -65,3 +66,5 @@ export const superuserToken = async (httpServer: Server) => {
   }
   return `Bearer ${token}`
 }
+
+export const testServer = makeServer()
