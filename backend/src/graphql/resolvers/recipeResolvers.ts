@@ -117,7 +117,7 @@ export const recipeResolvers = {
         } })
       }
       try {
-        recipe.destroy()
+        await recipe.destroy()
         return true
       }
       catch (error) {
@@ -168,7 +168,7 @@ export const recipeResolvers = {
         } })
       }
       try {
-        like.destroy()
+        await like.destroy()
         return true
       }
       catch (error) {

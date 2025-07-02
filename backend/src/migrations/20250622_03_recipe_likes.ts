@@ -7,11 +7,13 @@ export const up: Migration = async ({ context: queryInterface }) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: 'recipes', key: 'id' },
+      onDelete: 'CASCADE',
     },
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: 'users', key: 'id' },
+      onDelete: 'CASCADE',
     },
     created_at: {
       type: DataTypes.DATE,
