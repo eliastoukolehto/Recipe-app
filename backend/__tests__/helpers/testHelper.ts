@@ -1,7 +1,7 @@
 import request from 'supertest'
 import { Server } from 'http'
-import { getEnv } from '../src/utils/config'
-import makeServer from '../app'
+import { getEnv } from '../../src/utils/config'
+import makeServer from '../../app'
 
 export const createUserQuery = /* GraphQL */`
   mutation createUser(
