@@ -2,7 +2,7 @@ import { existingCustomUserToken, existingUserToken, resetQuery, superuserToken,
 import request from 'supertest'
 import { Server } from 'http'
 import { recipeTestVariables } from '../helpers/testVariables'
-import { createRecipeQuery, deleteRecipeQuery } from '../helpers/testQueries'
+import { createRecipeQuery, deleteRecipeQuery, likeRecipeQuery } from '../helpers/testQueries'
 
 let httpServer: Server
 let token: string
@@ -28,6 +28,29 @@ describe('recipeResolver tests', () => {
         .set({ Authorization: token })
 
       const recipeId = response1.body.data.createRecipe.id
+
+      const response2 = await request(httpServer)
+        .post('/')
+        .send({ query: deleteRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token })
+
+      expect(response2.body.errors).toBeUndefined()
+      expect(response2.body.data.deleteRecipe).toBe(true)
+    })
+
+    test('succeeds for recipe with likes', async () => {
+      const variables = recipeTestVariables
+      const response1 = await request(httpServer)
+        .post('/')
+        .send({ query: createRecipeQuery, variables })
+        .set({ Authorization: token })
+
+      const recipeId = response1.body.data.createRecipe.id as number
+
+      await request(httpServer)
+        .post('/')
+        .send({ query: likeRecipeQuery, variables: { id: recipeId } })
+        .set({ Authorization: token })
 
       const response2 = await request(httpServer)
         .post('/')

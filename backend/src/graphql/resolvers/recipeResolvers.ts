@@ -139,6 +139,13 @@ export const recipeResolvers = {
           code: 'BAD_USER_INPUT',
         } })
       }
+      // Check if like already exists
+      const like = await RecipeLike.findOne({ where: { userId: user.id, recipeId: id } })
+      if (like) {
+        throw new GraphQLError('Recipe already liked', { extensions: {
+          code: 'BAD_USER_INPUT',
+        } })
+      }
       try {
         const addedLike = await RecipeLike.create({ recipeId: id, userId: user.id })
         return addedLike
