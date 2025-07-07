@@ -5,8 +5,10 @@ import { Box, IconButton, InputAdornment, Pagination, TextField, Typography } fr
 import { RecipeListItem } from '../types/recipe'
 import SearchIcon from '@mui/icons-material/Search'
 import RecipeList from './RecipeList'
+import { useAppSelector } from '../hooks'
 
 const Home = () => {
+  const user = useAppSelector(state => state.user)
   const [page, setPage] = useState<number>(0)
   const [search, setSearch] = useState<string>('')
   const { data: result, loading, refetch } = useQuery(GET_RECIPES, { variables: { page } })
@@ -16,7 +18,7 @@ const Home = () => {
 
   useEffect(() => {
     refetch()
-  }, [])
+  }, [user])
 
   const handleSearch = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()

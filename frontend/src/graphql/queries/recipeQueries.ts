@@ -57,6 +57,8 @@ export const GET_RECIPE = gql`
       id
       username
     }
+    totalLikes
+    likedByCurrentUser
     }
   }
 `
@@ -79,7 +81,24 @@ export const GET_RECIPES = gql`
         id
         username
       }
+      totalLikes
+      likedByCurrentUser
     }
     }
+  }
+`
+
+export const ADD_RECIPE_LIKE = gql`
+  mutation likeRecipe($id: ID!) {
+    likeRecipe(id: $id) {
+      recipeId
+      userId
+    }
+  }
+`
+
+export const REMOVE_RECIPE_LIKE = gql`
+  mutation removeRecipeLike($id: ID!) {
+    removeRecipeLike(id: $id)
   }
 `

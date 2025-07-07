@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../hooks'
 import EditIcon from '@mui/icons-material/Edit'
 import { useState } from 'react'
 import { notify } from '../reducers/notificationReducer'
+import LikeInteraction from './LikeInteraction'
 
 const RecipePage = () => {
   const { recipeId } = useParams()
@@ -137,7 +138,7 @@ const InteractionBar = ({ recipe }: { recipe: Recipe }) => {
 
   return (
     <Paper elevation={1} sx={{ padding: 2 }}>
-      <Stack direction="row" spacing={4}>
+      <Stack direction="row" sx={{ alignItems: 'center' }}>
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-evenly', flexGrow: 1, flexWrap: 'wrap' }}>
           <Typography variant="subtitle1">
             {`By: ${recipe.user.username}`}
@@ -175,6 +176,7 @@ const InteractionBar = ({ recipe }: { recipe: Recipe }) => {
             </Menu>
           </span>
         )}
+        <LikeInteraction recipe={recipe} showlikes={true} />
       </Stack>
 
       <Dialog closeAfterTransition={false} onClose={handleDialogClose} open={dialogOpen}>
