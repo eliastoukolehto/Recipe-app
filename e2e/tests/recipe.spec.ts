@@ -102,4 +102,19 @@ test.describe('Recipe app recipe', () => {
     await page.keyboard.press('Enter')
     await expect(page.getByText(/view/i)).not.toBeVisible()
   })
+
+  test('can be liked', async ({ page }) => {
+    await createUserAndLogin(page, 'TestUser', 'ValidPassword1')
+    await createRecipe(page, 'TestRecipe', 'TestDescription')
+    await page.getByLabel('likeButton').click()
+    await expect(page.getByLabel('removeLikeButton')).toBeVisible()
+  })
+
+  test('can have like removed', async ({ page }) => {
+    await createUserAndLogin(page, 'TestUser', 'ValidPassword1')
+    await createRecipe(page, 'TestRecipe', 'TestDescription')
+    await page.getByLabel('likeButton').click()
+    await page.getByLabel('removeLikeButton').click()
+    await expect(page.getByLabel('likeButton')).toBeVisible()
+  })
 })
