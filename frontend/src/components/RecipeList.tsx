@@ -1,6 +1,7 @@
 import { Button, Grid2 as Grid, Paper, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { RecipeListItem } from '../types/recipe'
+import LikeInteraction from './LikeInteraction'
 
 const RecipeList = ({ recipes }: { recipes: RecipeListItem[] }) => {
   return (
@@ -25,9 +26,14 @@ const RecipeList = ({ recipes }: { recipes: RecipeListItem[] }) => {
                   </Typography>
                 </Grid>
                 <Grid size="auto">
-                  <Button component={Link} to={`recipes/${recipe.id}`} variant="outlined">
-                    View
-                  </Button>
+                  <Grid container direction="row" sx={{ alignItems: 'center' }}>
+                    <Grid size="grow">
+                      <Button component={Link} to={`recipes/${recipe.id}`} variant="outlined">
+                        View
+                      </Button>
+                    </Grid>
+                    <LikeInteraction recipe={recipe} showlikes={true} />
+                  </Grid>
                 </Grid>
               </Grid>
             </Paper>

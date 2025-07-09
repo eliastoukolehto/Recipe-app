@@ -1,7 +1,5 @@
-import { createUserQuery, loginQuery, resetQuery } from './testHelper'
-import db from '../src/utils/db'
+import { createUserQuery, loginQuery, resetQuery, testServer } from './helpers/testHelper'
 import request from 'supertest'
-import makeServer from '../app'
 import { Server } from 'http'
 
 let httpServer: Server
@@ -16,13 +14,8 @@ query {
 
 describe('userResolver tests', () => {
   beforeAll(async () => {
-    await db.connectToDatabase()
-    httpServer = await makeServer()
+    httpServer = await testServer
     await request(httpServer).post('/').send({ query: resetQuery })
-  })
-
-  afterAll(async () => {
-    await db.sequelize.close()
   })
 
   describe('creating user', () => {

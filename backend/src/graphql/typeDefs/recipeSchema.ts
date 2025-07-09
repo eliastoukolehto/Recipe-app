@@ -8,6 +8,8 @@ const recipeTypeDefs = /* GraphQL */`
     serving: Serving
     prepareTime: Int
     user: User!
+    totalLikes: Int
+    likedByCurrentUser: Boolean!
   }
   type IngredientCategory {
     name: String
@@ -27,6 +29,10 @@ const recipeTypeDefs = /* GraphQL */`
     count: Int
     rows: [Recipe]
   } 
+  type RecipeLike {
+    userId: ID!
+    recipeId: ID!
+  }
   input IngredientCategoryInput {
     name: String
     ingredients: [IngredientInput!]!
@@ -60,6 +66,8 @@ const recipeTypeDefs = /* GraphQL */`
       prepareTime: Int
     ): Recipe
     deleteRecipe(id: ID!): Boolean
+    likeRecipe(id: ID!): RecipeLike
+    removeRecipeLike(id: ID!): Boolean
   }
 `
 

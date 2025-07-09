@@ -26,8 +26,10 @@ export interface Recipe {
   serving?: Serving
   prepareTime?: number
   user: SafeUser
+  likedByCurrentUser: boolean
+  totalLikes: number
 }
 
-export type RecipeFromInputs = Omit<Recipe, 'user' | 'id'>
+export type RecipeFromInputs = Omit<Recipe, 'user' | 'id' | 'likedByCurrentUser' | 'totalLikes'>
 
 export type RecipeListItem = Omit<Recipe, 'ingredientCategories' | 'steps'>

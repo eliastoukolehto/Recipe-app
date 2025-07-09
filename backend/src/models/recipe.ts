@@ -20,6 +20,7 @@ class Recipe extends Model<InferAttributes<Recipe>, InferCreationAttributes<Reci
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare userId: ForeignKey<User['id']>
+  declare totalLikes: CreationOptional<number>
 }
 
 Recipe.init({
@@ -51,6 +52,7 @@ Recipe.init({
   },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
+  totalLikes: DataTypes.NUMBER,
 }, {
   sequelize,
   underscored: true,
