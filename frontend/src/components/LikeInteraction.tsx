@@ -58,15 +58,16 @@ const LikeInteraction = ({ recipe, showlikes }: { recipe: Recipe | RecipeListIte
         slots={{ transition: Zoom }}
         placement="top"
         arrow
+        aria-label="likeTooltip"
       >
         <Grid>
           {likedByUser && (
-            <IconButton onClick={handleRemoveLike} color="primary">
+            <IconButton onClick={handleRemoveLike} color="primary" aria-label="removeLikeButton">
               <FavoriteIcon />
             </IconButton>
           )}
           {!likedByUser && (
-            <IconButton onClick={handleAddLike} color="primary">
+            <IconButton onClick={handleAddLike} color="primary" aria-label="likeButton">
               <FavoriteBorderIcon />
             </IconButton>
           )}
@@ -74,7 +75,7 @@ const LikeInteraction = ({ recipe, showlikes }: { recipe: Recipe | RecipeListIte
       </Tooltip>
       {showlikes && (
         <Grid>
-          <Typography>{likes}</Typography>
+          <Typography aria-label="likeAmount">{likes}</Typography>
         </Grid>
       )}
     </>
